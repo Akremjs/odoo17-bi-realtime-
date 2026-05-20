@@ -19,7 +19,7 @@
         Works standalone inside Odoo — no external infrastructure required.
     """,
     'author': 'AKREM.KHELIFI',
-    'website': 'https://github.com/Akremjs/bi-realtime-odoo17',
+    'website': 'https://github.com/Akremjs/BI-Realtime',
     'maintainer': 'AKREM.KHELIFI',
     'depends': [
         'base', 'sale', 'stock', 'account',
