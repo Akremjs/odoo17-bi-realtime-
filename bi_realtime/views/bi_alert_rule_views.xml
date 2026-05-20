@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       bi.alert.rule — Vues complètes Sprint 2
+       ══════════════════════════════════════════════════════════════ -->
+
+  <!-- ── Vue liste ─────────────────────────────────────────────── -->
+  <record id="view_bi_alert_rule_list" model="ir.ui.view">
+    <field name="name">bi.alert.rule.list</field>
+    <field name="model">bi.alert.rule</field>
+    <field name="arch" type="xml">
+      <tree string="Règles d'alertes"
+            decoration-danger="not active"
+            decoration-success="active"
+            editable="bottom">
+        <field name="sequence" widget="handle"/>
+        <field name="name"/>
+        <field name="kpi_name"/>
+        <field name="operator"/>
+        <field name="threshold" string="Seuil"/>
+        <field name="channel"/>
+        <field name="ai_enabled" widget="boolean_toggle" string="IA"/>
+        <field name="cooldown_minutes" string="Cooldown (min)"/>
+        <field name="trigger_count" string="Décl." readonly="1"/>
+        <field name="last_triggered" string="Dernier" readonly="1"/>
+        <field name="active" widget="boolean_toggle"/>
+        <button name="action_test_alert" type="object"
+                string="Tester" icon="fa-bolt"
+                class="btn-secondary btn-sm"
+                title="Déclencher un test"/>
+      </tree>
+    </field>
+  </record>
+
+  <!-- ── Vue formulaire ────────────────────────────────────────── -->
+  <record id="view_bi_alert_rule_form" model="ir.ui.view">
+    <field name="name">bi.alert.rule.form</field>
+    <field name="model">bi.alert.rule</field>
+    <field name="arch" type="xml">
+      <form string="Règle d'alerte">
+        <header>
+          <button name="action_test_alert" type="object"
+                  string="🔔 Tester l'alerte"
+                  class="btn-secondary"/>
+          <field name="active" widget="statusbar"
+                 statusbar_visible="1"/>
+        </header>
+        <sheet>
+          <widget name="web_ribbon" title="Inactif"
+                  bg_color="bg-danger"
+                  invisible="active == True"/>
+          <div class="oe_title">
+            <h1><field name="name" placeholder="Nom de la règle…"/></h1>
+          </div>
+
+          <!-- Condition -->
+          <group string="Condition de déclenchement" col="4">
+            <field name="kpi_name"/>
+            <field name="operator"/>
+            <field name="threshold"/>
+            <field name="cooldown_minutes"/>
+          </group>
+
+          <!-- Notification -->
+          <group string="Notification" col="2">
+            <field name="channel"/>
+            <field name="email_to"
+                   required="channel in ('email','both')"
+                   invisible="channel == 'bus'"/>
+            <field name="message_template"
+                   widget="text"
+                   colspan="2"
+                   placeholder="🚨 Alerte {kpi} : valeur {value} {operator} seuil {threshold}"/>
+          </group>
+
+          <!-- Analyse IA -->
+          <group string="Analyse IA (optionnelle)" col="2">
+            <field name="ai_enabled" widget="boolean_toggle"/>
+            <div class="o_field_widget" invisible="ai_enabled == False">
+              <p class="text-muted o_form_label" style="font-size:12px">
+                Variables disponibles : {kpi}, {value}, {threshold}
+              </p>
+            </div>
+            <field name="ai_prompt_template"
+                   widget="text"
+                   colspan="2"
+                   invisible="ai_enabled == False"
+                   required="ai_enabled == True"/>
+          </group>
+
+          <!-- Statistiques readonly -->
+          <group string="Statistiques" col="4">
+            <field name="trigger_count" readonly="1"/>
+            <field name="last_triggered" readonly="1"/>
+            <field name="last_value" readonly="1"/>
+            <div/>
+            <field name="last_ai_analysis"
+                   widget="text"
+                   colspan="4"
+                   readonly="1"
+                   invisible="last_ai_analysis == False"/>
+          </group>
+        </sheet>
+        <chatter/>
+      </form>
+    </field>
+  </record>
+
+  <!-- ── Vue kanban ─────────────────────────────────────────────── -->
+  <record id="view_bi_alert_rule_kanban" model="ir.ui.view">
+    <field name="name">bi.alert.rule.kanban</field>
+    <field name="model">bi.alert.rule</field>
+    <field name="arch" type="xml">
+      <kanban default_group_by="kpi_name"
+              class="o_kanban_small_column"
+              records_draggable="false">
+        <field name="name"/>
+        <field name="kpi_name"/>
+        <field name="operator"/>
+        <field name="threshold"/>
+        <field name="channel"/>
+        <field name="ai_enabled"/>
+        <field name="active"/>
+        <field name="trigger_count"/>
+        <field name="last_triggered"/>
+        <field name="color"/>
+        <templates>
+          <t t-name="kanban-box">
+            <div t-attf-class="oe_kanban_global_click
+                               #{record.active.raw_value ? '' : 'o_kanban_record_danger'}">
+              <div class="oe_kanban_details">
+                <strong>
+                  <field name="name"/>
+                </strong>
+                <div class="o_kanban_tags_section">
+                  <span class="badge badge-secondary">
+                    <field name="operator"/> <field name="threshold"/>
+                  </span>
+                  <t t-if="record.ai_enabled.raw_value">
+                    <span class="badge badge-info" title="Analyse IA activée">IA</span>
+                  </t>
+                  <t t-if="!record.active.raw_value">
+                    <span class="badge badge-danger">Inactif</span>
+                  </t>
+                </div>
+                <div>
+                  <small class="text-muted">
+                    Canal : <field name="channel"/>
+                  </small>
+                </div>
+                <div t-if="record.trigger_count.raw_value">
+                  <small class="text-muted">
+                    Déclenchements : <field name="trigger_count"/>
+                  </small>
+                </div>
+              </div>
+            </div>
+          </t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+
+  <!-- ── Vue recherche ──────────────────────────────────────────── -->
+  <record id="view_bi_alert_rule_search" model="ir.ui.view">
+    <field name="name">bi.alert.rule.search</field>
+    <field name="model">bi.alert.rule</field>
+    <field name="arch" type="xml">
+      <search string="Rechercher une règle">
+        <field name="name"/>
+        <field name="kpi_name"/>
+        <filter name="active"   string="Actives"   domain="[('active','=',True)]"/>
+        <filter name="inactive" string="Inactives" domain="[('active','=',False)]"/>
+        <filter name="ai"       string="Avec IA"   domain="[('ai_enabled','=',True)]"/>
+        <separator/>
+        <filter name="bus"   string="Canal Odoo"  domain="[('channel','in',['bus','both'])]"/>
+        <filter name="email" string="Canal email" domain="[('channel','in',['email','both'])]"/>
+        <group expand="0" string="Grouper par">
+          <filter name="group_kpi"     string="KPI"    context="{'group_by':'kpi_name'}"/>
+          <filter name="group_channel" string="Canal"  context="{'group_by':'channel'}"/>
+        </group>
+      </search>
+    </field>
+  </record>
+
+  <!-- ── Action window ──────────────────────────────────────────── -->
+  <record id="action_bi_alert_rules" model="ir.actions.act_window">
+    <field name="name">Règles d'alertes</field>
+    <field name="res_model">bi.alert.rule</field>
+    <field name="view_mode">tree,kanban,form</field>
+    <field name="search_view_id" ref="view_bi_alert_rule_search"/>
+    <field name="help" type="html">
+      <p class="o_view_nocontent_smiling_face">
+        Créez votre première règle d'alerte !
+      </p>
+      <p>
+        Configurez des alertes sur vos KPIs temps réel.
+        Les notifications sont envoyées via Odoo ou email dès qu'un seuil est franchi.
+        Activez l'analyse IA pour obtenir une explication contextuelle automatique.
+      </p>
+    </field>
+  </record>
+
+  <!-- ── Tableau de bord alertes (vue pivot + graphe déclenchements) ── -->
+  <record id="view_bi_alert_rule_pivot" model="ir.ui.view">
+    <field name="name">bi.alert.rule.pivot</field>
+    <field name="model">bi.alert.rule</field>
+    <field name="arch" type="xml">
+      <pivot string="Statistiques d'alertes">
+        <field name="kpi_name"      type="row"/>
+        <field name="channel"       type="col"/>
+        <field name="trigger_count" type="measure"/>
+      </pivot>
+    </field>
+  </record>
+
+</odoo>
+

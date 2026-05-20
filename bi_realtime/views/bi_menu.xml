@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ── Racine ───────────────────────────────────────────────── -->
+    <menuitem id="menu_bi_root" name="BI Temps Réel" sequence="90"/>
+
+    <!-- ── Dashboard client (widget OWL) ────────────────────────── -->
+    <record id="action_bi_dashboard_widget" model="ir.actions.client">
+        <field name="name">Dashboard BI</field>
+        <field name="tag">bi_realtime.dashboard_action</field>
+    </record>
+
+    <menuitem id="menu_bi_dashboard_widget"
+              name="📊 Dashboard"
+              parent="menu_bi_root"
+              action="action_bi_dashboard_widget"
+              sequence="1"/>
+
+    <!-- ── Gérer Dashboards (act_window) ────────────────────────── -->
+    <menuitem id="menu_bi_dashboard"
+              name="⚙️ Gérer Dashboards"
+              parent="menu_bi_root"
+              action="action_bi_dashboard"
+              sequence="2"/>
+
+    <!-- ── KPIs ─────────────────────────────────────────────────── -->
+    <menuitem id="menu_bi_kpis_group"
+              name="📈 KPIs"
+              parent="menu_bi_root"
+              sequence="3"/>
+    <menuitem id="menu_bi_kpi"
+              name="KPIs"
+              parent="menu_bi_kpis_group"
+              action="action_bi_kpi"
+              sequence="1"/>
+    <menuitem id="menu_bi_kpi_perso"
+              name="KPIs Personnalisés (DAX)"
+              parent="menu_bi_kpis_group"
+              action="action_bi_dax_measure"
+              sequence="2"/>
+    <menuitem id="menu_bi_kpi_history"
+              name="Historique KPI"
+              parent="menu_bi_kpis_group"
+              action="action_bi_kpi_history"
+              sequence="3"/>
+
+    <!-- ── Rapports ─────────────────────────────────────────────── -->
+    <menuitem id="menu_bi_reports"
+              name="📄 Rapports"
+              parent="menu_bi_root"
+              action="action_bi_report"
+              sequence="4"/>
+
+    <!-- ── Alertes ──────────────────────────────────────────────── -->
+    <menuitem id="menu_bi_alerts_group"
+              name="🔔 Alertes"
+              parent="menu_bi_root"
+              sequence="5"/>
+    <menuitem id="menu_bi_alert_rules"
+              name="Règles d'alertes"
+              parent="menu_bi_alerts_group"
+              action="action_bi_alert_rules"
+              sequence="1"/>
+    <menuitem id="menu_bi_ai_proactive"
+              name="🤖 Alertes IA"
+              parent="menu_bi_alerts_group"
+              action="action_bi_ai_proactive"
+              sequence="2"/>
+
+    <!-- ── Tâches ───────────────────────────────────────────────── -->
+    <menuitem id="menu_bi_todo"
+              name="✅ Tâches"
+              parent="menu_bi_root"
+              action="action_bi_todo"
+              sequence="6"/>
+
+</odoo>

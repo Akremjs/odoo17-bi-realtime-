@@ -1,0 +1,34 @@
+<section class="oe_container">
+  <div class="oe_row oe_spaced">
+    <h2 class="oe_slogan">BI Realtime pour Odoo 17</h2>
+    <h3 class="oe_slogan">Dashboards KPI synchronisés avec vos actions métier</h3>
+  </div>
+</section>
+
+<section class="oe_container oe_dark">
+  <div class="oe_row oe_spaced">
+    <h3>Fonctionnalités</h3>
+    <ul>
+      <li>Dashboards interactifs (Chart.js, thèmes, export JSON/Excel)</li>
+      <li>KPIs calculés depuis Odoo (ventes, factures, CRM, stock, achats, POS)</li>
+      <li><strong>Synchronisation automatique</strong> : création/validation d'une facture ou commande → rafraîchissement des KPIs et du dashboard (Bus Odoo)</li>
+      <li>Alertes email, comparaisons N vs N-1, rapports PDF</li>
+      <li>IA optionnelle via URL d'API configurable (Groq / service externe)</li>
+    </ul>
+  </div>
+</section>
+
+<section class="oe_container">
+  <div class="oe_row oe_spaced">
+    <h3>Configuration</h3>
+    <p>
+      Paramètres système : <code>bi_realtime.ai_api_url</code> (API IA, optionnel).
+      Les KPIs doivent utiliser la source <strong>Odoo</strong> et le modèle métier correspondant
+      (ex. <em>account.move</em> pour les factures).
+    </p>
+    <p>
+      Extension architecture Kafka/Spark (projet PFE) : disponible dans le dépôt Git
+      complet, non requise pour l'utilisation standard du module.
+    </p>
+  </div>
+</section>

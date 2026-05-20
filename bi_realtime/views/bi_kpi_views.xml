@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="bi_kpi_view_tree" model="ir.ui.view">
+        <field name="name">bi.kpi.tree</field>
+        <field name="model">bi.kpi</field>
+        <field name="arch" type="xml">
+            <tree string="KPIs" default_order="sequence">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="dashboard_id"/>
+                <field name="chart_type"/>
+                <field name="source"/>
+                <field name="value"/>
+                <field name="unit"/>
+                <field name="widget_size"/>
+                <field name="alert_enabled"/>
+                <field name="last_update"/>
+                <button name="action_refresh" type="object" string="🔄" title="Actualiser"/>
+                <button name="action_export_csv" type="object" string="📊" title="Exporter CSV"/>
+            </tree>
+        </field>
+    </record>
+    <record id="bi_kpi_view_form" model="ir.ui.view">
+        <field name="name">bi.kpi.form</field>
+        <field name="model">bi.kpi</field>
+        <field name="arch" type="xml">
+            <form string="KPI">
+                <header>
+                    <button name="action_refresh" type="object" string="🔄 Actualiser" class="btn-primary"/>
+                    <button name="action_export_csv" type="object" string="📊 Exporter CSV" class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <group string="Informations">
+                        <group>
+                            <field name="name"/>
+                            <field name="dashboard_id"/>
+                            <field name="source"/>
+                            <field name="chart_type"/>
+                            <field name="widget_size"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="color" widget="color"/>
+                            <field name="color2" widget="color"/>
+                            <field name="unit"/>
+                            <field name="target_value"/>
+                        </group>
+                    </group>
+                    <group string="Source données (Odoo)">
+                        <group>
+                            <field name="model_id"/>
+                            <field name="field_id"/>
+                            <field name="aggregation"/>
+                            <field name="filter_date_range"/>
+                            <field name="filter_domain" placeholder='[["state","=","sale"]]'/>
+                        </group>
+                    </group>
+                    <group string="Alertes">
+                        <field name="alert_enabled"/>
+                        <field name="alert_threshold" invisible="not alert_enabled"/>
+                        <field name="alert_condition" invisible="not alert_enabled"/>
+                        <field name="alert_email" invisible="not alert_enabled"/>
+                    </group>
+                    <group string="Résultats">
+                        <field name="value" readonly="1"/>
+                        <field name="value_previous" readonly="1"/>
+                        <field name="variation_pct" readonly="1"/>
+                        <field name="last_update" readonly="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_bi_kpi" model="ir.actions.act_window">
+        <field name="name">KPIs</field>
+        <field name="res_model">bi.kpi</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
+
+
+
+

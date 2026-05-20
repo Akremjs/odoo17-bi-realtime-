@@ -1,0 +1,377 @@
+
+
+
+
+
+
+/* ════════════════════════════════════════════════════════════════
+   BI Realtime — Éditeur DAX
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Conteneur principal ── */
+.dax-editor-wrap {
+    background: var(--bi-card, #fff);
+    border-radius: 12px;
+    border: 1px solid var(--bi-border, #e8ecf4);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── En-tête ── */
+.dax-editor-header {
+    background: linear-gradient(135deg, #1e1e2e 0%, #313244 100%);
+    color: #cdd6f4;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.dax-editor-icon { font-size: 18px; }
+.dax-editor-title { font-weight: 700; font-size: 15px; }
+.dax-editor-badge {
+    background: #cba6f7;
+    color: #1e1e2e;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+}
+
+/* ── Méta-infos ── */
+.dax-meta-row {
+    display: flex;
+    gap: 12px;
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid var(--bi-border, #e8ecf4);
+    flex-wrap: wrap;
+}
+.dax-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 160px;
+}
+.dax-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--bi-sub, #8a94a6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.dax-input, .dax-select {
+    background: var(--bi-bg, #f4f6fb);
+    border: 1px solid var(--bi-border, #e8ecf4);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    color: var(--bi-text, #1a1f36);
+    outline: none;
+    transition: border-color 0.2s;
+}
+.dax-input:focus, .dax-select:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+}
+
+/* ── Corps éditeur ── */
+.dax-editor-body {
+    display: flex;
+    gap: 0;
+    flex: 1;
+    min-height: 340px;
+}
+.dax-editor-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid var(--bi-border, #e8ecf4);
+    padding: 14px;
+    gap: 10px;
+    min-width: 0;
+}
+.dax-help-col {
+    width: 280px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* ── Toolbar ── */
+.dax-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.dax-toolbar-label { font-size: 12px; font-weight: 600; color: var(--bi-sub, #8a94a6); }
+.dax-toolbar-btns { display: flex; gap: 6px; }
+.dax-tb-btn {
+    background: var(--bi-bg, #f4f6fb);
+    border: 1px solid var(--bi-border, #e8ecf4);
+    border-radius: 6px;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--bi-text, #1a1f36);
+    transition: all 0.15s;
+}
+.dax-tb-btn:hover { border-color: #6366f1; color: #6366f1; }
+.dax-tb-btn-primary { background: #6366f1; color: #fff; border-color: #6366f1; }
+.dax-tb-btn-primary:hover { background: #4f46e5; color: #fff; }
+
+/* ── Zone éditeur (textarea + numéros de ligne) ── */
+.dax-editor-area-wrap {
+    display: flex;
+    flex: 1;
+    border: 1px solid #45475a;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #1e1e2e;
+    min-height: 180px;
+}
+.dax-line-numbers {
+    background: #181825;
+    color: #585b70;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 12px 8px 12px 12px;
+    text-align: right;
+    user-select: none;
+    min-width: 36px;
+    overflow: hidden;
+    border-right: 1px solid #313244;
+}
+.dax-editor-textarea {
+    flex: 1;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    font-family: 'Courier New', Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    padding: 12px;
+    border: none;
+    outline: none;
+    resize: none;
+    min-height: 180px;
+    tab-size: 2;
+    white-space: pre;
+    overflow-wrap: normal;
+    overflow-x: auto;
+}
+.dax-editor-textarea::placeholder { color: #585b70; }
+
+/* ── Autocomplétion ── */
+.dax-autocomplete-list {
+    position: absolute;
+    top: calc(100% + 2px);
+    left: 40px;
+    background: #313244;
+    border: 1px solid #45475a;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    z-index: 1000;
+    min-width: 280px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+.dax-ac-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: background 0.1s;
+}
+.dax-ac-item:hover, .dax-ac-item.active { background: #45475a; }
+.dax-ac-name { font-family: monospace; font-weight: 700; color: #89b4fa; font-size: 13px; }
+.dax-ac-desc { font-size: 11px; color: #a6adc8; margin-left: 10px; }
+
+/* ── Barre de prévisualisation ── */
+.dax-preview-bar {
+    background: #181825;
+    border-radius: 6px;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    border: 1px solid #313244;
+}
+.dax-preview-label { color: #585b70; font-weight: 600; font-size: 11px; }
+.dax-preview-result {
+    font-family: monospace;
+    font-weight: 700;
+    font-size: 18px;
+    color: #a6e3a1;
+    flex: 1;
+}
+.dax-preview-status { font-size: 11px; color: #585b70; }
+
+/* ── Modèle helper ── */
+.dax-model-helper { display: flex; flex-direction: column; gap: 6px; }
+.dax-fields-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.dax-field-chip {
+    background: #313244;
+    color: #89dceb;
+    font-family: monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    border: 1px solid #45475a;
+    transition: all 0.15s;
+}
+.dax-field-chip:hover { background: #45475a; border-color: #89dceb; }
+
+/* ── Aide ── */
+.dax-help-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--bi-border, #e8ecf4);
+}
+.dax-help-tab {
+    flex: 1;
+    padding: 10px 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--bi-sub, #8a94a6);
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+}
+.dax-help-tab.active {
+    color: #6366f1;
+    border-bottom-color: #6366f1;
+}
+.dax-help-panel { display: none; overflow-y: auto; flex: 1; padding: 10px; }
+.dax-help-panel.active { display: block; }
+
+/* ── Exemples ── */
+.dax-examples-grid { display: flex; flex-direction: column; gap: 5px; }
+.dax-example-btn {
+    background: var(--bi-bg, #f4f6fb);
+    border: 1px solid var(--bi-border, #e8ecf4);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: left;
+    color: var(--bi-text, #1a1f36);
+    transition: all 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dax-example-btn:hover { border-color: #6366f1; color: #6366f1; background: rgba(99,102,241,0.06); }
+
+/* ── Fonction list ── */
+.dax-fn-list { display: flex; flex-direction: column; gap: 2px; }
+.dax-fn-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.1s;
+    gap: 8px;
+}
+.dax-fn-item:hover { background: var(--bi-bg, #f4f6fb); }
+.dax-fn-name { font-family: monospace; font-weight: 700; font-size: 12px; color: #6366f1; }
+.dax-fn-desc { font-size: 11px; color: var(--bi-sub, #8a94a6); text-align: right; }
+
+/* ── Footer ── */
+.dax-editor-footer {
+    display: flex;
+    gap: 10px;
+    padding: 14px 20px;
+    border-top: 1px solid var(--bi-border, #e8ecf4);
+    justify-content: flex-end;
+}
+.dax-btn-save {
+    background: #6366f1;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 22px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+.dax-btn-save:hover { background: #4f46e5; }
+.dax-btn-cancel {
+    background: none;
+    border: 1px solid var(--bi-border, #e8ecf4);
+    border-radius: 8px;
+    padding: 9px 18px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--bi-sub, #8a94a6);
+}
+.dax-btn-cancel:hover { border-color: #e74c3c; color: #e74c3c; }
+
+/* ── Modal DAX dans le dashboard ── */
+.bi-dax-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 9000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.bi-dax-modal-box {
+    background: var(--bi-card, #fff);
+    border-radius: 14px;
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+}
+
+/* ── KPI card avec badge DAX ── */
+.bi-kpi-dax-badge {
+    background: linear-gradient(135deg, #cba6f7, #89b4fa);
+    color: #1e1e2e;
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 10px;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
+}
+
+/* ── Thème sombre ── */
+[data-theme="dark"] .dax-editor-wrap { background: #1a1d2e; border-color: #2d3148; }
+[data-theme="dark"] .dax-meta-row { border-color: #2d3148; }
+[data-theme="dark"] .dax-input,
+[data-theme="dark"] .dax-select { background: #0f1117; border-color: #2d3148; color: #e8eaf6; }
+[data-theme="dark"] .dax-toolbar-label { color: #6b7280; }
+[data-theme="dark"] .dax-tb-btn { background: #0f1117; border-color: #2d3148; color: #e8eaf6; }
+[data-theme="dark"] .dax-example-btn { background: #0f1117; border-color: #2d3148; color: #e8eaf6; }
+[data-theme="dark"] .dax-fn-item:hover { background: #0f1117; }
+[data-theme="dark"] .dax-fn-desc { color: #6b7280; }
+[data-theme="dark"] .dax-field-chip { background: #0f1117; }
+[data-theme="dark"] .dax-editor-footer { border-color: #2d3148; }
+[data-theme="dark"] .dax-btn-cancel { border-color: #2d3148; color: #6b7280; }
+[data-theme="dark"] .dax-help-tabs { border-color: #2d3148; }
+[data-theme="dark"] .dax-help-tab { color: #6b7280; }
+[data-theme="dark"] .dax-model-helper .dax-select { background: #0f1117; }
+
+
+
+
+
+
+

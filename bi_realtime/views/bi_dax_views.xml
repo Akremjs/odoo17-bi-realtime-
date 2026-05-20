@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="bi_dax_measure_view_tree" model="ir.ui.view">
+        <field name="name">bi.dax.measure.tree</field>
+        <field name="model">bi.dax.measure</field>
+        <field name="arch" type="xml">
+            <tree string="Mesures DAX" default_order="sequence">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="dashboard_id"/>
+                <field name="chart_type"/>
+                <field name="format_type"/>
+                <field name="result_preview"/>
+                <field name="formula_valid" widget="boolean" string="✓"/>
+                <field name="kpi_id" optional="show"/>
+                <field name="last_computed" optional="show"/>
+                <button name="action_compute" type="object" string="▶ Calculer" class="btn-primary btn-sm"/>
+                <button name="action_validate_formula" type="object" string="✓ Valider" class="btn-secondary btn-sm"/>
+            </tree>
+        </field>
+    </record>
+    <record id="bi_dax_measure_view_form" model="ir.ui.view">
+        <field name="name">bi.dax.measure.form</field>
+        <field name="model">bi.dax.measure</field>
+        <field name="arch" type="xml">
+            <form string="Mesure DAX">
+                <header>
+                    <button name="action_compute" type="object"
+                            string="▶ Calculer et injecter dans le Dashboard" class="btn-primary"/>
+                    <button name="action_validate_formula" type="object"
+                            string="✓ Valider la formule" class="btn-secondary"/>
+                </header>
+                <sheet>
+                    <!-- FIX: champs utilisés dans les modifiers doivent être déclarés dans la vue -->
+                    <field name="formula_valid" invisible="1"/>
+                    <field name="formula_error" invisible="1"/>
+                    <div class="alert alert-danger" role="alert" invisible="not formula_error">
+                        <strong>❌ Erreur DAX :</strong>
+                        <span><field name="formula_error" readonly="1" nolabel="1"/></span>
+                    </div>
+                    <div class="alert alert-success" role="alert"
+                         invisible="not formula_valid or not result_preview">
+                        <strong>✅ Résultat :</strong>
+                        <field name="result_preview" readonly="1" nolabel="1"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="Nom de la mesure..."/></h1>
+                    </div>
+                    <group string="🎯 Destination">
+                        <group>
+                            <field name="dashboard_id"/>
+                            <field name="kpi_id" domain="[('dashboard_id','=',dashboard_id)]"/>
+                            <field name="sequence"/>
+                        </group>
+                        <group>
+                            <field name="chart_type"/>
+                            <field name="color" widget="color"/>
+                            <field name="widget_size"/>
+                            <field name="target_value"/>
+                        </group>
+                    </group>
+                    <group string="🎨 Format">
+                        <group>
+                            <field name="format_type"/>
+                            <field name="decimal_places"/>
+                        </group>
+                        <group>
+                            <field name="unit"/>
+                            <field name="currency_symbol" invisible="format_type != 'currency'"/>
+                            <field name="default_date_filter"/>
+                        </group>
+                    </group>
+                    <group string="📐 Formule DAX">
+                        <field name="formula" widget="text"
+                               placeholder="CALCULATE(SUM(sale.order[amount_total]), sale.order[state]=&quot;sale&quot;)"/>
+                    </group>
+                    <group string="📦 Variables (optionnel)">
+                        <field name="variables" widget="text" placeholder='{"objectif_mensuel": 50000}'/>
+                        <field name="description"/>
+                    </group>
+                    <group string="📊 Dernier résultat">
+                        <group>
+                            <field name="result_value" readonly="1" digits="[16,4]"/>
+                        </group>
+                        <group>
+                            <field name="last_computed" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_bi_dax_measure" model="ir.actions.act_window">
+        <field name="name">Mesures DAX</field>
+        <field name="res_model">bi.dax.measure</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
+
+
+
+

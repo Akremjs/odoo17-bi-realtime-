@@ -1,0 +1,34 @@
+
+
+
+
+
+
+/* BI Realtime — Layout CSS (drag & drop states) */
+
+.bi-edit-active .bi-widget {
+  cursor: grab;
+  border-style: dashed;
+  border-color: #6366f1;
+}
+.bi-edit-active .bi-widget:active { cursor: grabbing; }
+
+.bi-drag-dragging {
+  opacity: 0.45;
+  transform: scale(0.96);
+  box-shadow: 0 12px 32px rgba(99,102,241,0.25) !important;
+  z-index: 50;
+}
+
+.bi-drag-over {
+  border: 2px dashed #6366f1 !important;
+  background: rgba(99,102,241,0.06) !important;
+  transform: scale(1.01);
+}
+
+
+
+
+
+
+

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_bi_report" model="ir.actions.act_window">
+        <field name="name">Rapports BI</field>
+        <field name="res_model">bi.report</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="view_bi_report_tree" model="ir.ui.view">
+        <field name="name">bi.report.tree</field>
+        <field name="model">bi.report</field>
+        <field name="arch" type="xml">
+            <tree string="Rapports BI">
+                <field name="name"/>
+                <field name="report_type"/>
+                <field name="period"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="score_global" string="Score %"/>
+                <field name="record_count"/>
+                <field name="anomaly_count" string="Anomalies"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_bi_report_form" model="ir.ui.view">
+        <field name="name">bi.report.form</field>
+        <field name="model">bi.report</field>
+        <field name="arch" type="xml">
+            <form string="Rapport BI Executive" class="o_bi_report_chat">
+                <header>
+                    <button name="action_generate"
+                            string="🚀 Générer"
+                            type="object" class="btn-primary"
+                            invisible="state == 'generated'"/>
+                    <button name="action_send_email"
+                            string="📧 Envoyer par email"
+                            type="object"
+                            invisible="state == 'draft'"/>
+                    <button name="action_reset"
+                            string="🔄 Réinitialiser"
+                            type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,generated"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"
+                                   placeholder="Nom du rapport..."/></h1>
+                    </div>
+                    <group>
+                        <group string="Configuration">
+                            <field name="report_type"/>
+                            <field name="period"/>
+                            <field name="date_from"
+                                   invisible="period != 'custom'"/>
+                            <field name="date_to"
+                                   invisible="period != 'custom'"/>
+                            <field name="compare_previous"/>
+                        </group>
+                        <group string="Résultats et envoi">
+                            <field name="score_global" readonly="1"
+                                   widget="percentpie"/>
+                            <field name="record_count" readonly="1"/>
+                            <field name="anomaly_count" readonly="1"/>
+                            <field name="email_to"
+                                   placeholder="destinataire@email.com"/>
+                            <field name="export_file"
+                                   filename="export_fname"
+                                   widget="binary" readonly="1"
+                                   invisible="not export_file"/>
+                            <field name="export_fname" invisible="1"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        
+
+                        <page string="📊 Rapport">
+                            <field name="result_html" widget="html"
+                                   nolabel="1" colspan="2"
+                                   readonly="1"
+                                   invisible="not result_html"/>
+                        </page>
+
+                        <page string="📈 Comparaison N vs N-1"
+                              invisible="not comparison_html">
+                            <field name="comparison_html" widget="html"
+                                   nolabel="1" colspan="2"
+                                   readonly="1"/>
+                        </page>
+
+                        <page string="🤖 Analyse IA"
+                              invisible="not ai_insight">
+                            <div style="padding:16px">
+                                <field name="ai_insight" nolabel="1"
+                                       colspan="2" readonly="1"
+                                       widget="html"/>
+                            </div>
+                        </page>
+
+                        <page string="💬 Chat avec l IA">
+                            <div class="o_bi_report_chat_area"
+                                 style="padding:16px">
+                                <group string="Poser une question à l IA">
+                                    <field name="ai_question"
+                                           placeholder="Ex: Quelles sont les causes de la baisse des ventes ? Que faire pour améliorer la marge ?"
+                                           nolabel="1"/>
+                                    <button name="action_ask_ai"
+                                            string="🤖 Analyser avec l IA"
+                                            type="object"
+                                            class="btn-primary"/>
+                                </group>
+                                <field name="ai_chat_response"
+                                       widget="html" nolabel="1"
+                                       readonly="1"
+                                       invisible="not ai_chat_response"/>
+                            </div>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+        <record id="view_bi_report_search" model="ir.ui.view">
+        <field name="name">bi.report.search</field>
+        <field name="model">bi.report</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+</odoo>

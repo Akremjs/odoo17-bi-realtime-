@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       bi.comparison — Vues N vs N-1  Sprint 4
+       ══════════════════════════════════════════════════════════════ -->
+
+  <!-- ── Vue liste principale ──────────────────────────────────── -->
+  <record id="view_bi_comparison_list" model="ir.ui.view">
+    <field name="name">bi.comparison.list</field>
+    <field name="model">bi.comparison</field>
+    <field name="arch" type="xml">
+      <tree string="Comparaison KPIs N vs N-1"
+            create="false" delete="false"
+            decoration-success="trend == 'up'"
+            decoration-danger="trend == 'down'"
+            decoration-muted="trend == 'flat'">
+
+        <field name="kpi_label" string="KPI" />
+
+        <field name="current_val" string="Période courante"/>
+
+        <field name="previous_val" string="N-1"/>
+
+        <field name="delta"
+               string="Variation"
+               decoration-success="delta >= 0"
+               decoration-danger="delta &lt; 0" />
+
+        <field name="pct_change" string="%"
+               decoration-success="pct_change >= 0"
+               decoration-danger="pct_change &lt; 0" />
+
+        <field name="trend" string="Tendance" widget="badge"
+               decoration-success="trend == 'up'"
+               decoration-danger="trend == 'down'"
+               decoration-warning="trend == 'flat'" />
+
+        <field name="period"  invisible="1" />
+        <field name="kpi_key" invisible="1" />
+        <field name="color_class" invisible="1" />
+      </tree>
+    </field>
+  </record>
+
+  <!-- ── Dashboard comparaison (vue kanban avec cartes vertes/rouges) ── -->
+  <record id="view_bi_comparison_kanban" model="ir.ui.view">
+    <field name="name">bi.comparison.kanban</field>
+    <field name="model">bi.comparison</field>
+    <field name="arch" type="xml">
+      <kanban create="false" delete="false" records_draggable="false"
+              class="o_kanban_comparison">
+        <field name="kpi_label"/>
+        <field name="current_val"/>
+        <field name="previous_val"/>
+        <field name="delta"/>
+        <field name="pct_change"/>
+        <field name="trend"/>
+        <field name="color_class"/>
+        <templates>
+          <t t-name="kanban-box">
+            <div t-attf-class="oe_kanban_card oe_kanban_global_click
+                o_kanban_comparison_card
+                #{record.trend.raw_value == 'up'   ? 'border-success' :
+                  record.trend.raw_value == 'down' ? 'border-danger'  : 'border-secondary'}">
+
+              <!-- Titre KPI -->
+              <div class="o_kanban_record_title">
+                <strong><field name="kpi_label"/></strong>
+              </div>
+
+              <!-- Valeur courante -->
+              <div class="o_kanban_record_body text-center" style="font-size:1.6em;font-weight:600">
+                <field name="current_val" widget="float_time"/>
+              </div>
+
+              <!-- Comparaison -->
+              <div class="o_kanban_record_bottom d-flex justify-content-between align-items-center">
+                <small class="text-muted">N-1 : <field name="previous_val"/></small>
+                <span t-attf-class="badge
+                    #{record.trend.raw_value == 'up'   ? 'badge-success' :
+                      record.trend.raw_value == 'down' ? 'badge-danger'  : 'badge-secondary'}">
+                  <t t-if="record.pct_change.raw_value >= 0">▲</t>
+                  <t t-else="">▼</t>
+                  <field name="pct_change"/>%
+                </span>
+              </div>
+
+            </div>
+          </t>
+        </templates>
+      </kanban>
+    </field>
+  </record>
+
+  <!-- ── Vue recherche / filtres ────────────────────────────────── -->
+  <record id="view_bi_comparison_search" model="ir.ui.view">
+    <field name="name">bi.comparison.search</field>
+    <field name="model">bi.comparison</field>
+    <field name="arch" type="xml">
+      <search string="Filtrer les KPIs">
+        <field name="kpi_label"/>
+        <filter name="up"   string="En hausse"  domain="[('trend','=','up')]"/>
+        <filter name="down" string="En baisse"  domain="[('trend','=','down')]"/>
+        <filter name="flat" string="Stables"    domain="[('trend','=','flat')]"/>
+        <separator/>
+        <filter name="week"  string="Semaine"  domain="[('period','=','week')]"/>
+        <filter name="month" string="Mois"     domain="[('period','=','month')]"/>
+      </search>
+    </field>
+  </record>
+
+  <!-- ── Wizard de choix de période ────────────────────────────── -->
+  <record id="view_bi_comparison_wizard" model="ir.ui.view">
+    <field name="name">bi.comparison.wizard</field>
+    <field name="model">bi.comparison</field>
+    <field name="arch" type="xml">
+      <form string="Comparaison N vs N-1">
+        <group>
+          <field name="period" widget="radio"/>
+        </group>
+        <footer>
+          <button name="action_open_comparison"
+                  type="object"
+                  string="Calculer"
+                  class="btn-primary"
+                  close="1"/>
+          <button string="Annuler" class="btn-secondary" special="cancel"/>
+        </footer>
+      </form>
+    </field>
+  </record>
+
+  <!-- ── Action principale ──────────────────────────────────────── -->
+  <record id="action_bi_comparison_week" model="ir.actions.server">
+    <field name="name">Comparaison semaine N vs N-1</field>
+    <field name="model_id" ref="model_bi_comparison"/>
+    <field name="state">code</field>
+    <field name="code">
+action = model.action_open_comparison('week')
+    </field>
+  </record>
+
+  <record id="action_bi_comparison_month" model="ir.actions.server">
+    <field name="name">Comparaison mois N vs N-1</field>
+    <field name="model_id" ref="model_bi_comparison"/>
+    <field name="state">code</field>
+    <field name="code">
+action = model.action_open_comparison('month')
+    </field>
+  </record>
+
+  <!-- ── SQL index (migration) ──────────────────────────────────── -->
+  <!--
+  À ajouter dans un fichier de migration ou exécuter manuellement :
+
+  CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_kpi_sales_window_start
+      ON kpi_sales (window_start DESC);
+  CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_kpi_invoices_window_start
+      ON kpi_invoices (window_start DESC);
+  CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_kpi_crm_window_start
+      ON kpi_crm (window_start DESC);
+  CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_kpi_stock_window_start
+      ON kpi_stock_moves (window_start DESC);
+  CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_kpi_pos_window_start
+      ON kpi_pos (window_start DESC);
+  -->
+
+</odoo>
+

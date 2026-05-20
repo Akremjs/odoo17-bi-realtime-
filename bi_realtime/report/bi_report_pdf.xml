@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_bi_report_pdf" model="ir.actions.report">
+        <field name="name">Rapport BI PDF</field>
+        <field name="model">bi.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">bi_realtime.report_bi_pdf_document</field>
+        <field name="report_file">bi_realtime.report_bi_pdf_document</field>
+        <field name="binding_model_id" ref="bi_realtime.model_bi_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_bi_pdf_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.external_layout">
+                    <div class="page" style="font-family:Arial,sans-serif;color:#1f2937">
+
+                        <!-- ══ PAGE DE GARDE ══ -->
+                        <div style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 100%);
+                                    border-radius:12px;padding:32px 28px;
+                                    margin-bottom:24px;color:#fff">
+                            <div style="display:table;width:100%">
+                                <div style="display:table-cell;vertical-align:middle;width:70%">
+                                    <div style="font-size:10px;letter-spacing:3px;
+                                                opacity:0.75;text-transform:uppercase;
+                                                margin-bottom:8px">
+                                        BI Realtime — Rapport Exécutif Confidentiel
+                                    </div>
+                                    <div style="font-size:24px;font-weight:900;
+                                                margin-bottom:8px;line-height:1.2">
+                                        <t t-esc="doc.name"/>
+                                    </div>
+                                    <div style="font-size:12px;opacity:0.85">
+                                        Période : <t t-esc="str(doc.date_from)"/>
+                                        au <t t-esc="str(doc.date_to)"/>
+                                    </div>
+                                    <div style="font-size:11px;opacity:0.75;margin-top:4px">
+                                        Généré le <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y à %H:%M')"/>
+                                    </div>
+                                </div>
+                                <div style="display:table-cell;vertical-align:middle;
+                                            width:30%;text-align:right">
+                                    <t t-if="doc.env.company.logo">
+                                        <img t-att-src="image_data_uri(doc.env.company.logo)"
+                                             style="max-height:70px;max-width:140px;
+                                                    background:#fff;border-radius:8px;
+                                                    padding:6px"/>
+                                    </t>
+                                    <div style="font-size:13px;font-weight:700;
+                                                margin-top:8px;opacity:0.9">
+                                        <t t-esc="doc.env.company.name"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ SCORES GLOBAUX ══ -->
+                        <div style="display:table;width:100%;
+                                    border-collapse:separate;margin-bottom:20px">
+                            <div style="display:table-row">
+                                <div style="display:table-cell;width:24%;
+                                            background:#f5f3ff;border:2px solid #c4b5fd;
+                                            border-radius:10px;padding:14px;
+                                            text-align:center;margin-right:8px">
+                                    <div style="font-size:28px;font-weight:900;color:#4f46e5">
+                                        <t t-esc="str(round(doc.score_global or 0, 0)) + '%'"/>
+                                    </div>
+                                    <div style="font-size:10px;color:#6b7280;
+                                                font-weight:600;text-transform:uppercase;
+                                                letter-spacing:1px">Score Global</div>
+                                </div>
+                                <div style="display:table-cell;width:2%"/>
+                                <div style="display:table-cell;width:24%;
+                                            background:#f0fdf4;border:2px solid #86efac;
+                                            border-radius:10px;padding:14px;text-align:center">
+                                    <div style="font-size:28px;font-weight:900;color:#16a34a">
+                                        <t t-esc="doc.report_type.upper()"/>
+                                    </div>
+                                    <div style="font-size:10px;color:#6b7280;
+                                                font-weight:600;text-transform:uppercase;
+                                                letter-spacing:1px">Type Rapport</div>
+                                </div>
+                                <div style="display:table-cell;width:2%"/>
+                                <div style="display:table-cell;width:24%;
+                                            background:#fff7ed;border:2px solid #fed7aa;
+                                            border-radius:10px;padding:14px;text-align:center">
+                                    <div style="font-size:28px;font-weight:900;color:#d97706">
+                                        <t t-esc="str(int(doc.record_count or 0))"/>
+                                    </div>
+                                    <div style="font-size:10px;color:#6b7280;
+                                                font-weight:600;text-transform:uppercase;
+                                                letter-spacing:1px">Enregistrements</div>
+                                </div>
+                                <div style="display:table-cell;width:2%"/>
+                                <div style="display:table-cell;width:24%;
+                                            background:#fef2f2;border:2px solid #fca5a5;
+                                            border-radius:10px;padding:14px;text-align:center">
+                                    <div style="font-size:28px;font-weight:900;color:#dc2626">
+                                        <t t-esc="str(int(doc.anomaly_count or 0))"/>
+                                    </div>
+                                    <div style="font-size:10px;color:#6b7280;
+                                                font-weight:600;text-transform:uppercase;
+                                                letter-spacing:1px">Anomalies</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ SÉPARATEUR ══ -->
+                        <div style="border-top:3px solid #4f46e5;
+                                    margin:0 0 20px 0;border-radius:2px"/>
+
+                        <!-- ══ ANALYSE IA STRUCTURÉE ══ -->
+                        <div t-if="doc.ai_insight">
+                            <div style="background:linear-gradient(135deg,#f5f3ff,#ede9fe);
+                                        border:1px solid #c4b5fd;border-radius:12px;
+                                        padding:20px 24px;margin-bottom:20px">
+
+                                <!-- Header IA -->
+                                <div style="display:table;width:100%;
+                                            border-bottom:2px solid #c4b5fd;
+                                            padding-bottom:12px;margin-bottom:16px">
+                                    <div style="display:table-cell;vertical-align:middle">
+                                        <span style="font-size:20px">🤖</span>
+                                        <span style="font-size:15px;font-weight:800;
+                                                     color:#4f46e5;margin-left:8px">
+                                            Analyse IA — Rapport de Décision Management
+                                        </span>
+                                    </div>
+                                    <div style="display:table-cell;text-align:right;
+                                                vertical-align:middle">
+                                        <span style="font-size:10px;color:#7c3aed;
+                                                     background:#ede9fe;
+                                                     padding:3px 10px;border-radius:20px">
+                                            LLaMA 3.1 via Groq
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Contenu IA -->
+                                <div style="font-size:11px;color:#374151;
+                                            line-height:1.8;white-space:pre-wrap">
+                                    <t t-esc="doc.ai_insight"/>
+                                </div>
+
+                                <!-- Footer IA -->
+                                <div style="margin-top:14px;padding-top:10px;
+                                            border-top:1px solid #c4b5fd;
+                                            font-size:9px;color:#7c3aed;text-align:right">
+                                    BI Realtime • Analyse confidentielle • Usage interne
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ══ COMPARAISON N vs N-1 ══ -->
+                        <div t-if="doc.comparison_html">
+                            <div style="background:#f8fafc;border:1px solid #e2e8f0;
+                                        border-radius:10px;padding:16px 20px;
+                                        margin-bottom:20px">
+                                <div style="font-size:13px;font-weight:800;
+                                            color:#4f46e5;margin-bottom:12px;
+                                            border-bottom:2px solid #e0e7ff;
+                                            padding-bottom:8px">
+                                    📈 Comparaison N vs N-1
+                                </div>
+                                <div t-out="doc.comparison_html"
+                                     style="font-size:11px"/>
+                            </div>
+                        </div>
+
+                        <!-- ══ PIED DE PAGE ══ -->
+                        <div style="position:fixed;bottom:0;left:0;right:0;
+                                    border-top:2px solid #4f46e5;
+                                    padding:8px 0;margin-top:24px;
+                                    background:#fff">
+                            <div style="display:table;width:100%">
+                                <div style="display:table-cell;font-size:9px;color:#6b7280">
+                                    <t t-esc="doc.env.company.name"/> —
+                                    <t t-esc="doc.name"/> — Confidentiel
+                                </div>
+                                <div style="display:table-cell;text-align:center;
+                                            font-size:9px;color:#4f46e5;font-weight:700">
+                                    BI Realtime — Powered by AI
+                                </div>
+                                <div style="display:table-cell;text-align:right;
+                                            font-size:9px;color:#6b7280">
+                                    <t t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y')"/>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

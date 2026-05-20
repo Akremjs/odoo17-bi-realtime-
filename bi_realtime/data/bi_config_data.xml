@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="bi_config_ai_api_url" model="ir.config_parameter">
+        <field name="key">bi_realtime.ai_api_url</field>
+        <field name="value">http://host.docker.internal:8000</field>
+    </record>
+</odoo>

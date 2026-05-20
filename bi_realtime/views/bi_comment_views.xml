@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="bi_comment_view_tree" model="ir.ui.view">
+        <field name="name">bi.comment.tree</field>
+        <field name="model">bi.comment</field>
+        <field name="arch" type="xml">
+            <tree string="Commentaires" default_order="create_date desc">
+                <field name="user_id"/>
+                <field name="message"/>
+                <field name="dashboard_id"/>
+                <field name="kpi_id"/>
+                <field name="is_pinned" widget="boolean"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+    <record id="action_bi_comment" model="ir.actions.act_window">
+        <field name="name">Commentaires</field>
+        <field name="res_model">bi.comment</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
+
+
+
+

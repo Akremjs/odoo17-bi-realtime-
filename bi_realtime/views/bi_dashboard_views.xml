@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="bi_dashboard_view_tree" model="ir.ui.view">
+        <field name="name">bi.dashboard.tree</field>
+        <field name="model">bi.dashboard</field>
+        <field name="arch" type="xml">
+            <tree string="Dashboards">
+                <field name="name"/>
+                <field name="color_theme"/>
+                <field name="kpi_count"/>
+                <field name="create_date"/>
+            </tree>
+        </field>
+    </record>
+    <record id="bi_dashboard_view_form" model="ir.ui.view">
+        <field name="name">bi.dashboard.form</field>
+        <field name="model">bi.dashboard</field>
+        <field name="arch" type="xml">
+            <form string="Dashboard">
+                <header>
+                    <button name="action_export_json" string="📥 Exporter JSON" type="object" class="btn-secondary"/>
+                    <button name="action_create_predefined_dashboards" string="✨ Dashboards prédéfinis" type="object" class="btn-secondary"/>
+                    <button name="action_deduplicate_kpis" string="🧹 Dédoublonner les KPI" type="object" class="btn-secondary"
+                            confirm="Supprimer les KPI avec le même calcul Odoo ou le même nom sur ce dashboard ?"/>
+                    <button name="action_seed_odoo_demo_for_kpis" string="📊 Données Odoo démo (KPI)" type="object" class="btn-secondary"
+                            groups="base.group_system"
+                            title="Crée commandes, CRM, factures, achats… pour remplir les KPI (admin uniquement)."/>
+                    <button name="action_remove_odoo_demo_for_kpis" string="🗑️ Supprimer démo Odoo" type="object" class="btn-secondary"
+                            groups="base.group_system"
+                            confirm="Supprimer les partenaires / documents marqués démo KPI ?"/>
+                </header>
+                <sheet>
+                    <group string="Informations">
+                        <group>
+                            <field name="name"/>
+                            <field name="color_theme" widget="radio"/>
+                            <field name="rtl_mode"/>
+                            <field name="refresh_interval"/>
+                        </group>
+                        <group>
+                            <field name="kpi_count" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="description"/>
+                    <group string="Sécurité">
+                        <field name="group_ids" widget="many2many_tags"/>
+                    </group>
+                    <field name="kpi_ids">
+                        <tree string="KPIs" editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="name"/>
+                            <field name="chart_type"/>
+                            <field name="value"/>
+                            <field name="unit"/>
+                            <field name="source"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="action_bi_dashboard" model="ir.actions.act_window">
+        <field name="name">Dashboards</field>
+        <field name="res_model">bi.dashboard</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
+
+
+
+

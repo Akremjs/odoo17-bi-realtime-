@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="bi_realtime.DashboardWidget">
+  <div class="bi-dashboard" t-att-data-theme="state.currentTheme">
+
+    <nav class="bi-navbar">
+      <div class="bi-nav-left">
+        <div class="bi-logo">
+          <span class="bi-logo-icon">📊</span>
+          <span class="bi-logo-text">BI Realtime</span>
+          <span class="bi-live-badge">LIVE</span>
+        </div>
+      </div>
+      <div class="bi-nav-center">
+        <div class="bi-datepicker-wrap">
+          <button class="bi-datepicker-btn" t-on-click="toggleDateFilterMenu">
+            <span class="bi-dp-btn-icon">📅</span>
+            <span class="bi-dp-btn-content">
+              <span class="bi-dp-btn-label">Période</span>
+              <span class="bi-dp-btn-value" t-esc="getDateRangeLabel()"/>
+            </span>
+            <span t-att-class="'bi-dp-btn-arrow' + (state.showDateFilterMenu ? ' open' : '')">▼</span>
+          </button>
+          <div class="bi-datepicker-panel" t-if="state.showDateFilterMenu">
+            <div class="bi-dp-panel-header">
+              <span class="bi-dp-panel-title">🗓️ Filtre de période</span>
+              <button class="bi-dp-panel-close" t-on-click="toggleDateFilterMenu">✕</button>
+            </div>
+            <div class="bi-dp-panel-body">
+              <div class="bi-dp-quick-col">
+                <div class="bi-dp-quick-title">Raccourcis</div>
+                <t t-foreach="state.dateFilters" t-as="df" t-key="df.value">
+                  <t t-if="df.value !== 'custom'">
+                    <button t-att-class="'bi-dp-quick' + (state.globalDateFilter === df.value ? ' active' : '')"
+                            t-att-data-filter="df.value" t-on-click="onQuickDateFilter">
+                      <t t-esc="df.icon"/> <t t-esc="df.label"/>
+                    </button>
+                  </t>
+                </t>
+              </div>
+              <div class="bi-dp-custom-col">
+                <span class="bi-dp-custom-title">Personnalisé</span>
+                <div class="bi-dp-custom-fields">
+                  <div class="bi-dp-field">
+                    <label class="bi-dp-field-lbl">De</label>
+                    <input class="bi-dp-date-input" type="date" t-att-value="state.customDateFrom" t-on-change="onDateFromChange"/>
+                  </div>
+                  <div class="bi-dp-arrow-sep">↓</div>
+                  <div class="bi-dp-field">
+                    <label class="bi-dp-field-lbl">À</label>
+                    <input class="bi-dp-date-input" type="date" t-att-value="state.customDateTo" t-on-change="onDateToChange"/>
+                  </div>
+                </div>
+                <div class="bi-dp-actions">
+                  <button class="bi-dp-apply-btn" t-on-click="applyCustomDateFilter">✅ Appliquer</button>
+                  <button class="bi-dp-reset-btn" t-on-click="resetDateFilter">↺</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="bi-nav-right">
+        <div class="bi-nav-actions">
+          <div class="bi-clock-chip">
+            <span class="bi-clock-dot"/>
+            <span t-esc="state.currentTime"/>
+          </div>
+          <div class="bi-theme-wrap">
+            <button class="bi-nav-btn" t-on-click="toggleThemeMenu">🎨 <span class="bi-nav-btn-label" t-esc="getThemeLabel()"/></button>
+            <div class="bi-theme-dropdown" t-if="state.showThemeMenu">
+              <div class="bi-theme-header">Thème</div>
+              <button class="bi-theme-opt" t-att-data-theme="'light'" t-on-click="onThemeClick">☀️ Clair</button>
+              <button class="bi-theme-opt" t-att-data-theme="'dark'" t-on-click="onThemeClick">🌙 Sombre</button>
+              <button class="bi-theme-opt" t-att-data-theme="'corporate'" t-on-click="onThemeClick">🏢 Corporate</button>
+              <button class="bi-theme-opt" t-att-data-theme="'ocean'" t-on-click="onThemeClick">🌊 Océan</button>
+              <button class="bi-theme-opt" t-att-data-theme="'sunset'" t-on-click="onThemeClick">🌅 Coucher</button>
+              <button class="bi-theme-opt" t-att-data-theme="'forest'" t-on-click="onThemeClick">🌲 Forêt</button>
+              <button class="bi-theme-opt" t-on-click="toggleRTL"><t t-if="state.rtlMode">◀️ LTR</t><t t-else="">▶️ RTL</t></button>
+            </div>
+          </div>
+          <button class="bi-nav-btn" t-on-click="exportDashboardXlsx">📥 <span class="bi-nav-btn-label">Excel</span></button>
+          <button class="bi-nav-btn" t-on-click="exportPDF">🖨️ <span class="bi-nav-btn-label">PDF</span></button>
+          <button class="bi-nav-btn" t-on-click="openImportModal">📤 <span class="bi-nav-btn-label">Import</span></button>
+          <button class="bi-nav-btn bi-nav-btn-ai" t-on-click="openAiDashboardModal">🤖 <span class="bi-nav-btn-label">IA</span></button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="bi-alerts-bar" t-if="state.alerts.length > 0">
+      <span class="bi-alerts-icon">⚠️</span><strong>Alertes :</strong>
+      <t t-foreach="state.alerts" t-as="alert" t-key="alert.id">
+        <span class="bi-alert-pill"><t t-esc="alert.name"/> : <t t-esc="alert.value"/></span>
+      </t>
+    </div>
+
+    <div class="bi-content">
+      <div class="bi-loading" t-if="state.loading">
+        <div class="bi-loading-ring"/><span>Chargement des données...</span>
+      </div>
+      <t t-else="">
+        <div class="bi-tabs-bar">
+          <div class="bi-tabs-scroll">
+            <t t-foreach="state.dashboards" t-as="dash" t-key="dash.id">
+              <div class="bi-tab-item">
+                <button t-att-class="'bi-tab' + (state.activeTab === dash.id ? ' bi-tab-active' : '')"
+                        t-att-data-id="dash.id" t-on-click="onTabClick" t-esc="dash.name"/>
+                <button class="bi-tab-star" t-att-data-id="dash.id" t-on-click="onDashBookmarkClick">
+                  <t t-if="isDashboardBookmarked(dash.id)">⭐</t><t t-else="">☆</t>
+                </button>
+              </div>
+            </t>
+            <button t-att-class="'bi-nav-btn' + (state.showBookmarksOnly ? ' bi-nav-btn-active' : '')"
+                    t-on-click="toggleShowBookmarks" style="margin-left:auto;">⭐ Favoris</button>
+          </div>
+        </div>
+
+        <div class="bi-main-layout">
+          <div class="bi-kpi-section">
+            <div class="bi-toolbar">
+              <div class="bi-sort-wrap">
+                <button class="bi-toolbar-btn" t-on-click="toggleSortMenu"><t t-esc="getSortLabel()"/> ▾</button>
+                <div class="bi-sort-dropdown" t-if="state.showSortMenu">
+                  <button class="bi-sort-opt" t-att-data-order="'default'" t-on-click="onSortClick">↕️ Ordre par défaut</button>
+                  <button class="bi-sort-opt" t-att-data-order="'az'" t-on-click="onSortClick">🔤 A → Z</button>
+                  <button class="bi-sort-opt" t-att-data-order="'za'" t-on-click="onSortClick">🔤 Z → A</button>
+                  <button class="bi-sort-opt" t-att-data-order="'value_desc'" t-on-click="onSortClick">📊 Valeur ↓</button>
+                  <button class="bi-sort-opt" t-att-data-order="'value_asc'" t-on-click="onSortClick">📊 Valeur ↑</button>
+                </div>
+              </div>
+              <button t-att-class="'bi-toolbar-btn' + (state.editMode ? ' bi-toolbar-btn-warn' : '')" t-on-click="toggleEditMode">
+                <t t-if="state.editMode">✅ Fin édition</t><t t-else="">✏️ Éditer layout</t>
+              </button>
+              <button class="bi-toolbar-btn bi-toolbar-btn-danger" t-if="state.editMode" t-on-click="resetLayout">↺ Réinitialiser</button>
+              <span class="bi-toolbar-sep"/>
+              <button class="bi-toolbar-btn" t-on-click="fixExistingKpis" title="Corriger les KPIs existants (modèle/champ/domaine) et recalculer">
+                🔧 Fix KPIs
+              </button>
+              <button class="bi-toolbar-btn" t-on-click="syncKpisWithOdoo">🔄 Sync Odoo</button>
+              <span class="bi-toolbar-sep"/>
+              <button class="bi-toolbar-btn" t-on-click="clearAssetsCache">🗑️ Cache</button>
+              <span class="bi-toolbar-sep"/>
+              <span class="bi-toolbar-info"><t t-esc="state.filteredKpis.length"/> KPI(s)</span>
+            </div>
+
+            <div class="bi-grid">
+              <div class="bi-empty-state" t-if="state.filteredKpis.length === 0">
+                <div class="bi-empty-icon">📊</div>
+                <h3>Aucun KPI dans ce dashboard</h3>
+                <p>Créez des KPIs ou utilisez la génération IA.</p>
+                <button class="bi-btn-primary bi-btn-ai" t-on-click="openAiDashboardModal">🤖 Générer avec l'IA</button>
+              </div>
+
+              <t t-foreach="state.filteredKpis" t-as="kpi" t-key="kpi.id">
+                <div t-att-class="'bi-widget bi-w-' + (kpi.widget_size || 'medium') + (kpi.alert_enabled and kpi.value &lt; kpi.alert_threshold ? ' bi-w-alert' : '')"
+                     t-att-data-kpi-id="kpi.id" t-att-style="'--c:' + (kpi.color || '#6366f1')">
+                  <span class="bi-w-alert-dot" t-if="kpi.alert_enabled and kpi.value &lt; kpi.alert_threshold">⚠️</span>
+                  <div class="bi-w-actions">
+                    <button title="Rafraîchir" t-att-data-id="kpi.id" t-on-click="onKpiRefresh">🔄</button>
+                    <button title="Éditer" t-att-data-id="kpi.id" t-on-click="onKpiEdit">✏️</button>
+                    <button title="Changer type" t-att-data-id="kpi.id" t-on-click="onKpiSwitch">🔀</button>
+                    <button title="Chat" t-att-data-id="kpi.id" t-att-data-name="kpi.name" t-on-click="onKpiChat">💬</button>
+                    <button title="Exporter" t-att-data-id="kpi.id" t-on-click="onKpiExport">📥</button>
+                    <button title="Édition complète" t-att-data-id="kpi.id" t-on-click="onKpiEditFull">⚙️</button>
+                    <button title="Favori" t-att-data-id="kpi.id" t-on-click="onKpiBookmark">
+                      <t t-if="kpi.is_bookmarked">⭐</t><t t-else="">☆</t>
+                    </button>
+                  </div>
+                  <div class="bi-drag-handle" t-if="state.editMode">
+                    <span>⠿</span><span t-esc="kpi.name"/>
+                    <select class="bi-size-sel" t-att-data-id="kpi.id" t-on-change="onResizeChange">
+                      <option value="small" t-att-selected="kpi.widget_size === 'small'">Petit</option>
+                      <option value="medium" t-att-selected="kpi.widget_size === 'medium'">Moyen</option>
+                      <option value="large" t-att-selected="kpi.widget_size === 'large'">Grand</option>
+                      <option value="xlarge" t-att-selected="kpi.widget_size === 'xlarge'">Très grand</option>
+                    </select>
+                  </div>
+                  <t t-if="kpi.chart_type === 'indicator' or kpi.chart_type === 'counter' or kpi.chart_type === 'number'">
+                    <div class="bi-kpi-head">
+                      <div class="bi-kpi-icon" t-att-style="'background:' + (kpi.color || '#6366f1') + '20'">
+                        <i t-att-class="'fa ' + (kpi.icon || 'fa-chart-line')" t-att-style="'color:' + (kpi.color || '#6366f1')"/>
+                      </div>
+                      <div class="bi-kpi-meta">
+                        <span class="bi-kpi-label" t-esc="kpi.name"/>
+                        <span class="bi-kpi-type-badge" t-esc="getChartTypeLabel(kpi.chart_type)"/>
+                      </div>
+                    </div>
+                    <div class="bi-kpi-value-row">
+                      <span class="bi-kpi-value" t-att-style="'color:' + (kpi.color || '#6366f1')" t-esc="state.formattedValues[kpi.id] || '0'"/>
+                      <span class="bi-kpi-unit" t-if="kpi.unit" t-esc="kpi.unit"/>
+                      <t t-if="state.evolutionPct[kpi.id]">
+                        <span t-att-class="'bi-evo-badge ' + (kpi.value >= kpi.value_previous ? 'bi-evo-up' : 'bi-evo-down')">
+                          <t t-if="kpi.value >= kpi.value_previous">▲</t><t t-else="">▼</t>
+                          <t t-esc="state.evolutionPct[kpi.id]"/>%
+                        </span>
+                      </t>
+                    </div>
+                    <div class="bi-kpi-prev" t-if="kpi.value_previous">Précédent : <t t-esc="kpi.value_previous"/></div>
+                    <t t-if="kpi.target_value">
+                      <div class="bi-kpi-bar-wrap">
+                        <div class="bi-kpi-bar" t-att-style="'width:' + Math.min(Math.round((kpi.value / (kpi.target_value || 1)) * 100), 100) + '%;background:' + (kpi.color || '#6366f1')"/>
+                      </div>
+                      <div class="bi-kpi-target">Objectif : <t t-esc="kpi.target_value"/></div>
+                    </t>
+                  </t>
+                  <t t-elif="kpi.chart_type === 'table'">
+                    <div class="bi-chart-title"><span t-esc="kpi.name"/><span class="bi-kpi-type-badge">📋 Tableau</span></div>
+                    <div class="bi-table-wrap">
+                      <table class="bi-tbl">
+                        <thead><tr><th>Catégorie</th><th>Valeur</th><th>%</th></tr></thead>
+                        <tbody>
+                          <t t-foreach="state.tableData[kpi.id] || []" t-as="row" t-key="row.label">
+                            <tr>
+                              <td t-esc="row.label"/>
+                              <td t-esc="row.value"/>
+                              <td><div class="bi-tbl-bar"><div class="bi-tbl-bar-fill" t-att-style="'width:' + row.pct + '%;background:' + (kpi.color || '#6366f1')"/></div></td>
+                            </tr>
+                          </t>
+                        </tbody>
+                      </table>
+                    </div>
+                  </t>
+                  <t t-elif="kpi.chart_type === 'radial'">
+                    <div class="bi-chart-title"><span t-esc="kpi.name"/><span class="bi-kpi-type-badge">⭕ Gauge</span></div>
+                    <div class="bi-radial-wrap">
+                      <canvas t-att-id="'chart_' + kpi.id" class="bi-canvas-radial"/>
+                      <div class="bi-radial-center">
+                        <div class="bi-radial-value" t-att-style="'color:' + (kpi.color || '#6366f1')" t-esc="state.formattedValues[kpi.id] || '0'"/>
+                        <div class="bi-radial-unit" t-if="kpi.unit" t-esc="kpi.unit"/>
+                      </div>
+                    </div>
+                  </t>
+                  <t t-else="">
+                    <div class="bi-chart-title">
+                      <span t-esc="kpi.name"/>
+                      <span class="bi-kpi-type-badge" t-esc="getChartTypeLabel(kpi.chart_type)"/>
+                      <span class="bi-drill-tip" t-if="kpi.drill_field_id" title="Cliquez pour drill-down">🔍</span>
+                    </div>
+                    <div class="bi-canvas-wrap"><canvas t-att-id="'chart_' + kpi.id" class="bi-canvas"/></div>
+                  </t>
+                </div>
+              </t>
+            </div>
+
+            <div class="bi-global-chart-card" t-if="state.filteredKpis.length > 0">
+              <div class="bi-global-chart-header">
+                <span>📊 Vue globale — Actuel vs Précédent</span>
+                <span class="bi-global-chart-period" t-esc="getDateFilterLabel()"/>
+              </div>
+              <canvas t-ref="globalChart" class="bi-global-canvas"/>
+            </div>
+
+          </div>
+
+          <div class="bi-todo-section">
+            <div class="bi-todo-card">
+              <div class="bi-todo-hd">
+                <div class="bi-todo-hd-left">
+                  <span class="bi-todo-hd-icon">✅</span>
+                  <span class="bi-todo-hd-title">Tâches</span>
+                  <span class="bi-todo-count" t-esc="state.todoStats.total - state.todoStats.done"/>
+                </div>
+                <button class="bi-todo-add-btn" t-on-click="addTodo">+ Ajouter</button>
+              </div>
+              <div class="bi-todo-prog-wrap"><div class="bi-todo-prog" t-att-style="'width:' + state.todoStats.pct + '%'"/></div>
+              <div class="bi-todo-prog-label"><t t-esc="state.todoStats.pct"/>% complété</div>
+              <div class="bi-todo-tabs">
+                <button t-att-class="'bi-todo-tab' + (state.todoFilter === 'all' ? ' active' : '')" t-att-data-filter="'all'" t-on-click="onTodoFilter">Toutes</button>
+                <button t-att-class="'bi-todo-tab' + (state.todoFilter === 'pending' ? ' active' : '')" t-att-data-filter="'pending'" t-on-click="onTodoFilter">En cours</button>
+                <button t-att-class="'bi-todo-tab' + (state.todoFilter === 'done' ? ' active' : '')" t-att-data-filter="'done'" t-on-click="onTodoFilter">Terminées</button>
+              </div>
+              <div class="bi-todo-form" t-if="state.showAddTodo">
+                <input class="bi-todo-input" type="text" placeholder="Nom de la tâche..." t-att-value="state.newTodoName" t-on-input="onNewTodoInput"/>
+                <div class="bi-todo-form-row">
+                  <select class="bi-todo-sel" t-on-change="onNewTodoPriority">
+                    <option value="low">Basse</option><option value="medium" selected="selected">Normale</option>
+                    <option value="high">Haute</option><option value="urgent">Urgente</option>
+                  </select>
+                  <input class="bi-todo-sel" type="date" t-att-value="state.newTodoDeadline" t-on-change="onNewTodoDeadline"/>
+                  <button class="bi-todo-save" t-on-click="saveTodo">✓</button>
+                  <button class="bi-todo-cancel" t-on-click="cancelAddTodo">✕</button>
+                </div>
+              </div>
+              <div class="bi-todo-list">
+                <div class="bi-todo-empty" t-if="state.filteredTodos.length === 0">Aucune tâche 🎉</div>
+                <t t-foreach="state.filteredTodos" t-as="todo" t-key="todo.id">
+                  <div t-att-class="'bi-todo-item' + (todo.is_done ? ' done' : '') + (todo.is_overdue ? ' overdue' : '')">
+                    <div t-att-class="'bi-todo-check' + (todo.is_done ? ' checked' : '')" t-att-data-id="todo.id" t-on-click="onTodoToggle">
+                      <t t-if="todo.is_done">✓</t>
+                    </div>
+                    <div class="bi-todo-body">
+                      <span t-att-class="'bi-todo-name' + (todo.is_done ? ' striked' : '')" t-esc="todo.name"/>
+                      <div class="bi-todo-info">
+                        <span t-att-class="'bi-prio-dot' + (todo.priority === 'high' or todo.priority === 'urgent' ? ' high' : todo.priority === 'medium' ? ' mid' : '')"/>
+                        <span t-att-class="'bi-todo-dl' + (todo.is_overdue ? ' late' : '')" t-if="todo.deadline" t-esc="todo.deadline"/>
+                        <span class="bi-todo-user" t-if="todo.user_id" t-esc="todo.user_id[1]"/>
+                      </div>
+                    </div>
+                    <button class="bi-todo-del" t-att-data-id="todo.id" t-on-click="onTodoDelete">✕</button>
+                  </div>
+                </t>
+              </div>
+            </div>
+          </div>
+        </div>
+      </t>
+    </div>
+
+    <!-- Chatbot IA flottant -->
+    <div class="bi-ai-fab-wrap">
+      <t t-if="state.showAiChatbot">
+        <div class="bi-ai-chat-window">
+          <div class="bi-ai-chat-header">
+            <div class="bi-ai-chat-hd-left">
+              <div class="bi-ai-avatar">🤖</div>
+              <div><div class="bi-ai-name">Assistant BI</div><div class="bi-ai-status">● En ligne</div></div>
+            </div>
+            <button class="bi-ai-chat-close" t-on-click="toggleAiChatbot">✕</button>
+          </div>
+          <div class="bi-ai-messages" id="bi-ai-chatbot-messages">
+            <t t-foreach="state.aiChatbotMessages" t-as="msg" t-key="msg_index">
+              <div t-att-class="'bi-ai-msg ' + (msg.role === 'user' ? 'bi-ai-msg-user' : 'bi-ai-msg-bot')">
+                <div class="bi-ai-bubble-avatar" t-if="msg.role !== 'user'">🤖</div>
+                <div class="bi-ai-bubble-wrap">
+                  <div class="bi-ai-bubble" t-esc="msg.text"/>
+                  <span class="bi-ai-bubble-time" t-esc="msg.time"/>
+                </div>
+              </div>
+            </t>
+            <div class="bi-ai-msg bi-ai-msg-bot" t-if="state.aiChatbotLoading">
+              <div class="bi-ai-typing"><span/><span/><span/></div>
+            </div>
+          </div>
+          <div class="bi-ai-chat-input-wrap">
+            <input class="bi-ai-chat-input" type="text" placeholder="Posez votre question..."
+                   t-att-value="state.aiChatbotInput" t-on-input="onAiChatInput" t-on-keydown="onAiChatKeydown"/>
+            <button class="bi-ai-send-btn" t-on-click="sendAiMessage" t-att-disabled="state.aiChatbotLoading">➤</button>
+          </div>
+        </div>
+      </t>
+      <button t-att-class="'bi-ai-fab' + (state.showAiChatbot ? ' bi-ai-fab-open' : '')" t-on-click="toggleAiChatbot">
+        <t t-if="state.showAiChatbot">✕</t><t t-else="">🤖</t>
+      </button>
+    </div>
+
+    <!-- Modales -->
+    <div class="bi-modal-overlay" t-if="state.switchModal" t-on-click.self="closeSwitchModal">
+      <div class="bi-modal bi-modal-switch">
+        <div class="bi-modal-header">🔀 Changer type graphique<button class="bi-modal-close" t-on-click="closeSwitchModal">✕</button></div>
+        <div class="bi-modal-body">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+            <t t-foreach="state.chartTypes" t-as="ct" t-key="ct.value">
+              <button class="bi-export-opt" t-att-data-type="ct.value" t-on-click="onSwitchTypeClick">
+                <span t-esc="ct.icon"/><br/><span t-esc="ct.label"/>
+              </button>
+            </t>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bi-modal-overlay" t-if="state.showEditModal" t-on-click.self="closeEditModal">
+      <div class="bi-modal bi-modal-edit">
+        <div class="bi-modal-header">✏️ Édition rapide KPI<button class="bi-modal-close" t-on-click="closeEditModal">✕</button></div>
+        <div class="bi-modal-body" t-if="state.editingKpi" style="display:flex;flex-direction:column;gap:12px;">
+          <div><label style="font-size:12px;font-weight:600;color:var(--bi-sub)">Nom</label>
+            <input style="width:100%;border:1px solid var(--bi-border);border-radius:8px;padding:8px;margin-top:4px;background:var(--bi-bg);color:var(--bi-text);"
+                   type="text" t-att-value="state.editingKpi.name" t-on-input="onEditKpiName"/></div>
+          <div style="display:flex;gap:10px;">
+            <div><label style="font-size:12px;font-weight:600;color:var(--bi-sub)">Couleur</label><br/><input type="color" t-att-value="state.editingKpi.color" t-on-input="onEditKpiColor"/></div>
+            <div><label style="font-size:12px;font-weight:600;color:var(--bi-sub)">Couleur 2</label><br/><input type="color" t-att-value="state.editingKpi.color2" t-on-input="onEditKpiColor2"/></div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <div style="flex:1;"><label style="font-size:12px;font-weight:600;color:var(--bi-sub)">Unité</label>
+              <input style="width:100%;border:1px solid var(--bi-border);border-radius:8px;padding:7px;margin-top:4px;background:var(--bi-bg);color:var(--bi-text);"
+                     type="text" t-att-value="state.editingKpi.unit" t-on-input="onEditKpiUnit"/></div>
+            <div style="flex:1;"><label style="font-size:12px;font-weight:600;color:var(--bi-sub)">Objectif</label>
+              <input style="width:100%;border:1px solid var(--bi-border);border-radius:8px;padding:7px;margin-top:4px;background:var(--bi-bg);color:var(--bi-text);"
+                     type="number" t-att-value="state.editingKpi.target_value" t-on-input="onEditKpiTarget"/></div>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;">
+            <input type="checkbox" t-att-checked="state.editingKpi.alert_enabled" t-on-change="onEditKpiAlert"/>
+            Activer alerte
+          </label>
+          <div t-if="state.editingKpi.alert_enabled">
+            <label style="font-size:12px;font-weight:600;color:var(--bi-sub)">Seuil d'alerte</label>
+            <input style="width:100%;border:1px solid var(--bi-border);border-radius:8px;padding:7px;margin-top:4px;background:var(--bi-bg);color:var(--bi-text);"
+                   type="number" t-att-value="state.editingKpi.alert_threshold" t-on-input="onEditKpiThreshold"/>
+          </div>
+        </div>
+        <div class="bi-modal-footer">
+          <button class="bi-btn-secondary" t-on-click="closeEditModal">Annuler</button>
+          <button class="bi-btn-primary" t-on-click="saveEditModal">💾 Enregistrer</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bi-modal-overlay" t-if="state.exportModal" t-on-click.self="closeExportModal">
+      <div class="bi-modal bi-modal-export">
+        <div class="bi-modal-header">📥 Exporter<button class="bi-modal-close" t-on-click="closeExportModal">✕</button></div>
+        <div class="bi-modal-body">
+          <div class="bi-export-grid">
+            <button class="bi-export-opt" t-on-click="onExportCsv"><span class="bi-export-opt-icon">📄</span>CSV</button>
+            <button class="bi-export-opt" t-on-click="onExportXlsx"><span class="bi-export-opt-icon">📊</span>Excel</button>
+            <button class="bi-export-opt" t-on-click="onExportPng"><span class="bi-export-opt-icon">🖼️</span>PNG</button>
+            <button class="bi-export-opt" t-on-click="onExportJson"><span class="bi-export-opt-icon">📦</span>JSON</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bi-modal-overlay" t-if="state.chatModal" t-on-click.self="closeChat">
+      <div class="bi-modal bi-modal-chat">
+        <div class="bi-modal-header">💬 Chat — <t t-esc="state.chatModal.kpiName"/><button class="bi-modal-close" t-on-click="closeChat">✕</button></div>
+        <div class="bi-ai-messages" id="bi-chat-messages" style="max-height:320px;padding:14px;">
+          <t t-foreach="state.chatModal.messages" t-as="msg" t-key="msg.id">
+            <div class="bi-ai-msg bi-ai-msg-bot">
+              <div class="bi-ai-bubble-avatar">👤</div>
+              <div class="bi-ai-bubble-wrap">
+                <strong><t t-esc="msg.user"/></strong>
+                <div class="bi-ai-bubble" t-esc="msg.text"/>
+                <span class="bi-ai-bubble-time"><t t-esc="msg.date"/> <t t-esc="msg.time"/></span>
+              </div>
+            </div>
+          </t>
+        </div>
+        <div class="bi-ai-chat-input-wrap">
+          <input class="bi-ai-chat-input" type="text" placeholder="Votre message..."
+                 t-att-value="state.chatModal.newMsg" t-on-input="onChatInput" t-on-keydown="onChatKeydown"/>
+          <button class="bi-ai-send-btn" t-on-click="sendChatMsg">➤</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="bi-modal-overlay" t-if="state.drillModal" t-on-click.self="closeDrillModal">
+      <div class="bi-modal" style="max-width:600px;">
+        <div class="bi-modal-header">🔍 Drill-down — <t t-esc="state.drillModal.label"/><button class="bi-modal-close" t-on-click="closeDrillModal">✕</button></div>
+        <div class="bi-modal-body"><canvas id="bi-drill-canvas" style="width:100%;height:260px;"/></div>
+        <div class="bi-modal-footer"><button class="bi-btn-secondary" t-on-click="drillUp">◀ Retour</button></div>
+      </div>
+    </div>
+
+    <div class="bi-modal-overlay" t-if="state.showImportModal" t-on-click.self="closeImportModal">
+      <div class="bi-modal bi-modal-import">
+        <div class="bi-modal-header">📤 Importer<button class="bi-modal-close" t-on-click="closeImportModal">✕</button></div>
+        <div class="bi-modal-body">
+          <div class="bi-import-drop">
+            <div class="bi-import-drop-icon">📁</div>
+            <p>Sélectionnez un fichier CSV ou Excel</p>
+            <input type="file" accept=".csv,.xlsx,.xls" t-on-change="onImportFileChange" style="margin-top:10px;"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bi-modal-overlay" t-if="state.showAiDashboardModal" t-on-click.self="closeAiDashboardModal">
+      <div t-att-class="'bi-modal bi-modal-ai' + (state.aiStep === 'preview' ? ' bi-modal-ai-preview' : '')">
+        <div class="bi-modal-header" style="flex-direction:column;gap:10px;padding-bottom:12px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%;">
+            <span style="font-weight:700;font-size:16px;">🤖 Générer des dashboards IA</span>
+            <button class="bi-modal-close" t-on-click="closeAiDashboardModal">✕</button>
+          </div>
+          <div class="bi-ai-stepper">
+            <div t-att-class="'bi-ai-step' + (state.aiStep === 'select' ? ' active' : ' done')">
+              <span class="bi-ai-step-num">1</span><span class="bi-ai-step-label">Choisir modules</span>
+            </div>
+            <div class="bi-ai-step-line"/>
+            <div t-att-class="'bi-ai-step' + (state.aiStep === 'preview' ? ' active' : (state.aiStep === 'generating' or state.aiStep === 'done' ? ' done' : ''))">
+              <span class="bi-ai-step-num">2</span><span class="bi-ai-step-label">Personnaliser</span>
+            </div>
+            <div class="bi-ai-step-line"/>
+            <div t-att-class="'bi-ai-step' + (state.aiStep === 'generating' or state.aiStep === 'done' ? ' active' : '')">
+              <span class="bi-ai-step-num">3</span><span class="bi-ai-step-label">Créer</span>
+            </div>
+          </div>
+        </div>
+        <t t-if="state.aiStep === 'select'">
+          <div class="bi-modal-body">
+            <p class="bi-ai-intro">Sélectionnez les modules Odoo pour la génération IA de KPIs.</p>
+            <div class="bi-ai-modules-grid">
+              <t t-foreach="getAvailableModules()" t-as="mod" t-key="mod.key">
+                <button t-att-class="'bi-ai-module-card' + (isAiModuleSelected(mod.key) ? ' selected' : '')"
+                        t-att-style="isAiModuleSelected(mod.key) ? '--mod-color:' + mod.color : '--mod-color:#8a94a6'"
+                        t-att-data-key="mod.key" t-on-click="onAiModuleClick">
+                  <span class="bi-ai-module-icon" t-esc="mod.icon"/>
+                  <span class="bi-ai-module-label" t-esc="mod.label"/>
+                  <span class="bi-ai-module-count"><t t-esc="this.AI_MODULE_CONFIG_COUNTS[mod.key] or ''"/></span>
+                  <span class="bi-ai-module-check" t-if="isAiModuleSelected(mod.key)">✓</span>
+                </button>
+              </t>
+            </div>
+          </div>
+          <div class="bi-modal-footer">
+            <button class="bi-btn-secondary" t-on-click="closeAiDashboardModal">Annuler</button>
+            <button class="bi-btn-primary bi-btn-ai" t-on-click="aiPreviewKpis" t-att-disabled="state.aiSelectedModules.length === 0">
+              Voir les KPIs proposés →
+            </button>
+          </div>
+        </t>
+        <t t-elif="state.aiStep === 'preview'">
+          <div class="bi-modal-body bi-ai-preview-body">
+            <t t-foreach="state.aiPreviewData" t-as="moduleData" t-key="moduleData.moduleKey">
+              <div class="bi-ai-module-section">
+                <div class="bi-ai-module-section-header" t-att-style="'border-left:4px solid ' + moduleData.color">
+                  <span class="bi-ai-mod-icon" t-esc="moduleData.icon"/>
+                  <span class="bi-ai-mod-name" t-esc="moduleData.label"/>
+                </div>
+                <div class="bi-ai-kpis-grid">
+                  <t t-foreach="moduleData.kpis" t-as="kpi" t-key="kpi._key">
+                    <div t-att-class="'bi-ai-kpi-card' + (aiIsKpiSelected(kpi._key) ? ' selected' : ' deselected')"
+                         t-att-style="'--kpi-color:' + (state.aiKpiEdits[kpi._key] and state.aiKpiEdits[kpi._key].color or kpi.color)">
+                      <div class="bi-ai-kpi-top">
+                        <label class="bi-ai-kpi-check-wrap">
+                          <input type="checkbox" t-att-checked="aiIsKpiSelected(kpi._key)"
+                                 t-on-change="() => this.aiToggleKpi(kpi._key)"/>
+                          <span class="bi-ai-kpi-checkmark"/>
+                        </label>
+                      </div>
+                      <div class="bi-ai-kpi-name" t-esc="kpi.name"/>
+                      <div class="bi-ai-kpi-chart-selector">
+                        <t t-foreach="[{v:'indicator',i:'🔢'},{v:'counter',i:'🧮'},{v:'bar',i:'📊'},{v:'line',i:'📈'},{v:'pie',i:'🥧'},{v:'doughnut',i:'🍩'},{v:'radial',i:'⭕'},{v:'funnel',i:'🔻'}]" t-as="ct" t-key="ct.v">
+                          <button t-att-class="'bi-ai-ct-btn' + ((state.aiKpiEdits[kpi._key] and state.aiKpiEdits[kpi._key].chart_type === ct.v) ? ' active' : '')"
+                                  t-on-click="() => this.aiChangeChartType(kpi._key, ct.v)"><t t-esc="ct.i"/></button>
+                        </t>
+                      </div>
+                    </div>
+                  </t>
+                </div>
+              </div>
+            </t>
+          </div>
+          <div class="bi-modal-footer">
+            <button class="bi-btn-secondary" t-on-click="() => this.goBackToSelectStep()">← Retour</button>
+            <button class="bi-btn-primary bi-btn-ai" t-on-click="generateAiDashboards" t-att-disabled="aiCountSelectedKpis() === 0">
+              🚀 Créer <t t-esc="aiCountSelectedKpis()"/> KPI(s)
+            </button>
+          </div>
+        </t>
+        <t t-elif="state.aiStep === 'generating' or state.aiStep === 'done'">
+          <div class="bi-modal-body" style="text-align:center;padding:48px 32px;">
+            <t t-if="state.aiStep === 'generating'"><div class="bi-loading-ring" style="margin:0 auto 20px;width:48px;height:48px;"/></t>
+            <t t-else=""><div style="font-size:56px;margin-bottom:16px;">✅</div></t>
+            <p style="font-size:15px;font-weight:700;" t-esc="state.aiProgress"/>
+          </div>
+        </t>
+      </div>
+    </div>
+
+  </div>
+</t>
+
+</templates>
+
+
+
+

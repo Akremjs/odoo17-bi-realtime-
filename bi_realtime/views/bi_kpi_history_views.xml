@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_bi_kpi_history_tree" model="ir.ui.view">
+        <field name="name">bi.kpi.history.tree</field>
+        <field name="model">bi.kpi.history</field>
+        <field name="arch" type="xml">
+            <tree string="Historique KPI" default_order="recorded_at desc">
+                <field name="kpi_id"/>
+                <field name="value"/>
+                <field name="recorded_at"/>
+                <field name="source"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_bi_kpi_history_graph" model="ir.ui.view">
+        <field name="name">bi.kpi.history.graph</field>
+        <field name="model">bi.kpi.history</field>
+        <field name="arch" type="xml">
+            <graph string="Évolution KPI" type="line">
+                <field name="recorded_at" type="row"/>
+                <field name="value" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_bi_kpi_history" model="ir.actions.act_window">
+        <field name="name">Historique KPI</field>
+        <field name="res_model">bi.kpi.history</field>
+        <field name="view_mode">tree,graph</field>
+        <field name="context">{}</field>
+    </record>
+</odoo>
