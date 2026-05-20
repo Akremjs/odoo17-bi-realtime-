@@ -47,8 +47,8 @@
 .bi-nav-right{flex-shrink:0}
 
 /* Logo */
-.bi-logo{display:flex;align-items:center;gap:8px}
-.bi-logo-icon{font-size:20px}
+.bi-logo{display:flex;align-items:center;gap:10px}
+.bi-logo-img{width:32px;height:32px;border-radius:8px;object-fit:cover;flex-shrink:0;box-shadow:0 2px 8px rgba(99,102,241,0.35)}
 .bi-logo-text{font-size:16px;font-weight:800;color:var(--bi-primary);letter-spacing:-0.5px}
 .bi-live-badge{background:#10b981;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;letter-spacing:1px;animation:pulse-badge 2s infinite}
 @keyframes pulse-badge{0%,100%{opacity:1}50%{opacity:0.65}}

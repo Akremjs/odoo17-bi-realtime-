@@ -7,7 +7,7 @@
     <nav class="bi-navbar">
       <div class="bi-nav-left">
         <div class="bi-logo">
-          <span class="bi-logo-icon">📊</span>
+          <img class="bi-logo-img" src="/bi_realtime/static/description/logo.svg" alt="BI Realtime"/>
           <span class="bi-logo-text">BI Realtime</span>
           <span class="bi-live-badge">LIVE</span>
         </div>

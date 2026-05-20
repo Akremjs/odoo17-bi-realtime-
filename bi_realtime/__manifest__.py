@@ -1,25 +1,26 @@
 
 # -*- coding: utf-8 -*-
 {
-    'name': 'BI Realtime',
-    'version': '17.0.6.1.0',
+    'name': 'BI en temps réel',
+    'version': '17.0.6.3.0',
     'category': 'Reporting',
-    'summary': 'Dashboards KPI temps réel synchronisés avec Odoo (ventes, factures, CRM…)',
+    'summary': 'Live KPI dashboards synced with Odoo (sales, invoices, CRM, stock, POS)',
     'description': """
-        Module BI Temps Réel pour Odoo 17
-        ====================================
-        * Dashboards interactifs drag & drop
-        * KPIs avec 18+ types de graphiques (Chart.js)
-        * Streaming Kafka/Spark temps réel
-        * Notifications push Odoo Bus (WebSocket)
-        * Mesures DAX / KPIs Personnalisés
-        * Rapports PDF + Word avec IA
-        * Export Excel / CSV / JSON
-        * Alertes email automatiques
-        * 6 thèmes visuels
-        * Sécurité par groupes et rôles
+        BI Realtime for Odoo 17
+        =======================
+        * Interactive drag & drop dashboards (Chart.js, 6 themes)
+        * KPIs from native Odoo models (sales, accounting, CRM, stock, purchase, POS)
+        * Real-time refresh via Odoo Bus when documents are created or posted
+        * DAX-style measures, email alerts, N vs N-1 comparisons
+        * PDF reports and Excel / JSON export
+        * Optional AI assistant (configurable API URL)
+        * Role-based security
+
+        Works standalone inside Odoo — no external infrastructure required.
     """,
-    'author': 'PFE Team',
+    'author': 'AKREM.KHELIFI',
+    'website': 'https://github.com/Akremjs/bi-realtime-odoo17',
+    'maintainer': 'AKREM.KHELIFI',
     'depends': [
         'base', 'sale', 'stock', 'account',
         'web', 'bus', 'crm', 'point_of_sale',

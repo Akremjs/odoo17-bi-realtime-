@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="BI Realtime">
+  <defs>
+    <linearGradient id="bi-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <filter id="bi-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  <rect width="256" height="256" rx="56" fill="#1a1d2e"/>
+  <rect x="28" y="28" width="200" height="200" rx="44" fill="#252836" stroke="#2d3148" stroke-width="2"/>
+  <rect x="72" y="148" width="28" height="52" rx="8" fill="url(#bi-grad)"/>
+  <rect x="114" y="118" width="28" height="82" rx="8" fill="url(#bi-grad)"/>
+  <rect x="156" y="88" width="28" height="112" rx="8" fill="url(#bi-grad)"/>
+  <circle cx="188" cy="72" r="18" fill="#10b981" filter="url(#bi-glow)"/>
+  <circle cx="188" cy="72" r="10" fill="#34d399"/>
+  <path d="M 64 168 Q 128 120 192 96" fill="none" stroke="#6366f1" stroke-width="3" stroke-linecap="round" opacity="0.35"/>
+</svg>
