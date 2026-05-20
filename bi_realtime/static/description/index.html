@@ -1,77 +1,83 @@
-<meta charset="utf-8"/>
-
 <section class="oe_container">
-  <div class="oe_row oe_spaced">
-    <div class="oe_span12 text-center">
-      <img src="banner.png" alt="AKREM BI Realtime" style="max-width:100%;border-radius:12px;"/>
+    <div class="oe_row oe_spaced">
+        <div class="oe_span12 text-center">
+            <img src="banner.png" alt="AKREM BI Realtime"/>
+        </div>
     </div>
-  </div>
-  <div class="oe_row oe_spaced">
-    <h2 class="oe_slogan">AKREM BI Realtime for Odoo 17</h2>
-    <h3 class="oe_slogan">Live KPI dashboards synced with your business documents</h3>
-    <p class="oe_mt32 text-center">
-      By <strong>AKREM.KHELIFI</strong> &mdash;
-      create or validate an invoice, sales order, or CRM activity &rarr;
-      KPIs and charts refresh instantly via Odoo Bus.
-    </p>
-  </div>
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan" style="margin-top:20px;">AKREM BI Realtime for Odoo 17</h2>
+        <h3 class="oe_slogan">Live KPI dashboards synced with your business documents</h3>
+        <p class="text-center" style="max-width:800px;margin:16px auto;">
+            By <strong>AKREM.KHELIFI</strong>.
+            When you create or post invoices, sales orders, or CRM activities,
+            KPIs and charts refresh instantly via Odoo Bus.
+        </p>
+    </div>
 </section>
 
 <section class="oe_container oe_dark">
-  <div class="oe_row oe_spaced">
-    <div class="oe_span6">
-      <div class="oe_demo oe_picture oe_screenshot">
-        <img src="icon.png" alt="AKREM BI Realtime" style="max-width:200px;margin:auto;display:block;border-radius:16px;"/>
-      </div>
+    <div class="oe_row oe_spaced">
+        <div class="oe_span6">
+            <h3>Interactive dashboards</h3>
+            <p>
+                Drag-and-drop layout, Chart.js charts, 6 visual themes,
+                Excel and JSON export, department tabs
+                (Sales, CRM, Stock, Accounting, HR, Purchase, POS).
+            </p>
+        </div>
+        <div class="oe_span6">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img src="screenshot_dashboard.png" alt="Dashboard"/>
+            </div>
+        </div>
     </div>
-    <div class="oe_span6">
-      <h3>Interactive dashboards</h3>
-      <p>
-        Drag-and-drop layout, 18+ Chart.js chart types, 6 visual themes,
-        Excel / JSON export, and department tabs (Sales, CRM, Stock, Accounting, HR, Purchase, POS).
-      </p>
-    </div>
-  </div>
 </section>
 
 <section class="oe_container">
-  <div class="oe_row oe_spaced">
-    <div class="oe_span12">
-      <h3>Key features</h3>
-      <ul>
-        <li>KPIs from native Odoo models (sales, invoices, CRM, stock, purchases, POS)</li>
-        <li><strong>Automatic sync</strong> on document create / post (Odoo Bus WebSocket)</li>
-        <li>Email alerts, N vs N-1 comparisons, PDF reports</li>
-        <li>Optional AI assistant (configurable API URL: Groq or external service)</li>
-        <li>DAX-style measures, custom KPIs, scheduled refresh</li>
-      </ul>
+    <div class="oe_row oe_spaced">
+        <div class="oe_span6">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img src="icon.png" alt="AKREM BI Realtime icon"/>
+            </div>
+        </div>
+        <div class="oe_span6">
+            <h3>Key features</h3>
+            <ul>
+                <li>KPIs from native Odoo models (sales, invoices, CRM, stock, purchases, POS)</li>
+                <li><strong>Automatic sync</strong> on document create or post (Odoo Bus)</li>
+                <li>Email alerts, period comparisons, PDF reports</li>
+                <li>Optional AI assistant (system parameter <code>bi_realtime.ai_api_url</code>)</li>
+                <li>Custom KPIs, DAX-style measures, scheduled refresh</li>
+            </ul>
+        </div>
     </div>
-  </div>
 </section>
 
 <section class="oe_container oe_dark">
-  <div class="oe_row oe_spaced">
-    <h3 class="oe_slogan">Configuration</h3>
-    <div class="oe_span12">
-      <ol>
-        <li>Install the module and open <strong>AKREM BI Realtime &rarr; Dashboard</strong>.</li>
-        <li>Create KPIs with source <strong>Odoo</strong> and the matching model (e.g. <em>account.move</em> for invoices).</li>
-        <li>Optional: set system parameter <code>bi_realtime.ai_api_url</code> for the AI assistant.</li>
-      </ol>
-      <p>
-        <strong>Author &amp; support:</strong> AKREM.KHELIFI &mdash;
-        <a href="https://github.com/Akremjs/BI-Realtime">GitHub repository</a>
-      </p>
+    <div class="oe_row oe_spaced">
+        <h3 class="oe_slogan">Configuration</h3>
+        <div class="oe_span12">
+            <ol>
+                <li>Install the module and open <strong>AKREM BI Realtime</strong> then <strong>Dashboard</strong>.</li>
+                <li>Create KPIs with source <strong>Odoo</strong> and the matching model (e.g. <em>account.move</em> for invoices).</li>
+                <li>Optional: set <code>bi_realtime.ai_api_url</code> for the AI assistant API.</li>
+            </ol>
+            <p>
+                <strong>Author and support:</strong> AKREM.KHELIFI
+                <br/>
+                <a href="https://github.com/Akremjs/BI-Realtime">https://github.com/Akremjs/BI-Realtime</a>
+            </p>
+        </div>
     </div>
-  </div>
 </section>
 
 <section class="oe_container">
-  <div class="oe_row oe_spaced">
-    <h3 class="oe_slogan">Version fran&ccedil;aise</h3>
-    <p>
-      <strong>AKREM BI Realtime</strong> : tableaux de bord KPI temps r&eacute;el synchronis&eacute;s
-      avec vos factures, commandes et activit&eacute;s CRM. D&eacute;velopp&eacute; par AKREM.KHELIFI pour Odoo 17.
-    </p>
-  </div>
+    <div class="oe_row oe_spaced">
+        <h3 class="oe_slogan">Version francaise</h3>
+        <p class="oe_span12">
+            <strong>AKREM BI Realtime</strong> : tableaux de bord KPI en temps reel,
+            synchronises avec vos factures, commandes et activites CRM.
+            Developpe par AKREM.KHELIFI pour Odoo 17.
+        </p>
+    </div>
 </section>

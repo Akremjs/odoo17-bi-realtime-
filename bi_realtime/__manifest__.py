@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'AKREM BI Realtime',
-    'version': '17.0.6.4.0',
+    'version': '17.0.6.4.1',
     'category': 'Reporting',
     'summary': 'Live KPI dashboards synced with Odoo (sales, invoices, CRM, stock, POS)',
     'description': """
