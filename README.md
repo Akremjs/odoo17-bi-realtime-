@@ -2,5 +2,6 @@
 
 Odoo module `bi_realtime` for [Odoo Apps](https://apps.odoo.com).
 
-Full PFE project (Docker, Kafka, Spark): see branch `main`.
+
+project (Docker, Kafka, Spark): see branch `main`.
 https://github.com/Akremjs/BI-Realtime-Dashboard-pour-Odoo
