@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'BI Realtime',
-    'version': '17.0.7.0.0',
+    'version': '17.0.7.0.1',
     'category': 'Reporting',
     'summary': 'Live KPI dashboards & BI cockpit — sales, finance, CRM, stock, POS (Odoo Bus)',
     'description': """
@@ -23,6 +23,12 @@ https://github.com/Akremjs/BI-Realtime-Dashboard
     'author': 'AKREM.KHELIFI',
     'website': 'https://github.com/Akremjs/BI-Realtime-Dashboard',
     'maintainer': 'AKREM.KHELIFI',
+    'images': [
+        'static/description/main_screenshot.png',
+        'static/description/screenshot_dashboard.png',
+        'static/description/screenshot_infographic.png',
+        'static/description/banner.png',
+    ],
     'depends': [
         'base', 'sale', 'stock', 'account',
         'web', 'bus', 'crm', 'point_of_sale',

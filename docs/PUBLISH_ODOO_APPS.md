@@ -95,6 +95,7 @@ Source vectorielle : `logo.svg` (couleurs marque `#6366f1`, `#10b981`).
 |-------|--------|
 | Langue | Description `index.html` en **anglais** ✅ |
 | Icône | `static/description/icon.png` (PNG réel) ✅ |
+| Grande image Apps (cadre gauche) | `main_screenshot.png` + clé `images` dans `__manifest__.py` ✅ |
 | Pas de secrets | Pas de `.env`, clés API dans le code |
 | Licence | `LGPL-3` dans le manifest ✅ |
 | Autonome | Le module doit fonctionner **sans** Docker/Kafka |
