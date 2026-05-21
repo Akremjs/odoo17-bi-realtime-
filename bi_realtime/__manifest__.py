@@ -21,7 +21,7 @@ Author: AKREM.KHELIFI
 https://github.com/Akremjs/BI-Realtime-Dashboard
     """,
     'author': 'AKREM.KHELIFI',
-    'website': 'https://github.com/Akremjs/BI-Realtime-Dashboard',
+    'website': '',
     'maintainer': 'AKREM.KHELIFI',
     'images': [
         'static/description/main_screenshot.png',
