@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Push branch 17.0 to GitHub repo BI-Realtime (Odoo Apps).
+# Sync and push branch 17.0 to GitHub repo BI-Realtime (Odoo Apps).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -22,6 +22,22 @@ else
     git remote add apps "$REPO_URL"
 fi
 
+echo "📥 Fetch $REPO_URL"
+git fetch apps
+
+if git rev-parse "apps/$BRANCH" &>/dev/null; then
+    echo "🔄 Rebase local sur apps/$BRANCH"
+    if ! git rebase "apps/$BRANCH"; then
+        echo ""
+        echo "❌ Conflit pendant le rebase."
+        echo "   Corrigez les fichiers, puis :"
+        echo "     git add ."
+        echo "     git rebase --continue"
+        echo "   Ou annulez : git rebase --abort"
+        exit 1
+    fi
+fi
+
 echo "📤 Push $BRANCH → $REPO_URL"
 git push -u apps "$BRANCH"
 
@@ -30,4 +46,3 @@ echo "✅ OK — URL Odoo Apps :"
 echo "   ssh://git@github.com/Akremjs/BI-Realtime.git#$BRANCH"
 echo ""
 echo "Vérifiez : https://github.com/Akremjs/BI-Realtime/tree/$BRANCH"
-echo "Structure : bi_realtime/ à la racine"
