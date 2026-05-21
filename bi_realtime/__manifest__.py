@@ -2,21 +2,26 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'AKREM BI Realtime',
-    'version': '17.0.6.4.1',
+    'version': '17.0.6.5.0',
     'category': 'Reporting',
-    'summary': 'Live KPI dashboards synced with Odoo (sales, invoices, CRM, stock, POS)',
+    'summary': 'Live KPI dashboards & BI cockpit — sales, finance, CRM, stock, POS (real-time Odoo Bus)',
     'description': """
-        BI Realtime for Odoo 17
-        =======================
-        * Interactive drag & drop dashboards (Chart.js, 6 themes)
-        * KPIs from native Odoo models (sales, accounting, CRM, stock, purchase, POS)
-        * Real-time refresh via Odoo Bus when documents are created or posted
-        * DAX-style measures, email alerts, N vs N-1 comparisons
-        * PDF reports and Excel / JSON export
-        * Optional AI assistant (configurable API URL)
-        * Role-based security
+AKREM BI Realtime — Business Intelligence for Odoo 17
+=======================================================
 
-        Works standalone inside Odoo — no external infrastructure required.
+Turn your Odoo data into interactive dashboards that update in real time when
+you confirm orders, post invoices or win opportunities.
+
+Highlights
+----------
+* Drag & drop dashboards, 18+ Chart.js charts, 6 themes
+* Departments: Sales, CRM, Accounting, Inventory, Purchase, HR, POS
+* Real-time KPI refresh via Odoo Bus (LIVE badge)
+* Custom KPIs, DAX-style measures, N vs N-1 comparisons, email alerts
+* PDF executive reports, Excel / JSON export, optional AI assistant
+* 100% native Odoo data — no external stack required for standard use
+
+Author: AKREM.KHELIFI — https://github.com/Akremjs/BI-Realtime
     """,
     'author': 'AKREM.KHELIFI',
     'website': 'https://github.com/Akremjs/BI-Realtime',
