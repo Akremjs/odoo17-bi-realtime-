@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- ── Racine ───────────────────────────────────────────────── -->
-    <menuitem id="menu_bi_root" name="AKREM BI Realtime" sequence="90"/>
+    <menuitem id="menu_bi_root" name="BI Realtime" sequence="90"/>
 
     <!-- ── Dashboard client (widget OWL) ────────────────────────── -->
     <record id="action_bi_dashboard_widget" model="ir.actions.client">
