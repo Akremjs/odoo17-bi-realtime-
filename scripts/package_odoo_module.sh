@@ -36,7 +36,7 @@ MANIFEST="${MODULE_SRC}/__manifest__.py"
 VERSION=$(grep -E "^[[:space:]]*'version'" "$MANIFEST" | head -1 | sed -E "s/.*'([^']+)'.*/\1/")
 echo "   Version : ${VERSION:-?}"
 
-for req in icon.png banner.png index.html screenshot_dashboard.png; do
+for req in icon.png banner.png index.html screenshot_dashboard.png screenshot_infographic.png; do
     [ -f "${MODULE_SRC}/static/description/${req}" ] || {
         echo "❌ Fichier requis manquant : static/description/${req}"
         exit 1
